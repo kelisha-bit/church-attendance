@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "GreaterWorks City Church - Attendance App",
-    short_name: "GWCC Attendance",
-    description: "Church attendance tracking and member management app for GreaterWorks City Church in Ghana",
+    name: "Church Attendance App",
+    short_name: "ChurchApp",
+    description: "Comprehensive church management system for attendance, donations, and member management",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

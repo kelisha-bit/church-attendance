@@ -32,6 +32,7 @@ export interface Member {
   join_date: string
   status: "Active" | "Inactive"
   photo_url?: string
+  notes?: string
   created_at: string
   updated_at: string
 }
@@ -117,6 +118,7 @@ export const mockMembers: Member[] = [
     status: "Active",
     created_at: "2022-03-15T00:00:00Z",
     updated_at: "2022-03-15T00:00:00Z",
+    notes: "Member since childhood",
   },
   {
     id: "2",
@@ -129,6 +131,7 @@ export const mockMembers: Member[] = [
     status: "Active",
     created_at: "2023-01-20T00:00:00Z",
     updated_at: "2023-01-20T00:00:00Z",
+    notes: "Very active in community service",
   },
   {
     id: "3",
@@ -141,6 +144,7 @@ export const mockMembers: Member[] = [
     status: "Active",
     created_at: "2021-11-08T00:00:00Z",
     updated_at: "2021-11-08T00:00:00Z",
+    notes: "Loves working with kids",
   },
   {
     id: "4",
@@ -153,6 +157,7 @@ export const mockMembers: Member[] = [
     status: "Active",
     created_at: "2023-06-12T00:00:00Z",
     updated_at: "2023-06-12T00:00:00Z",
+    notes: "Youth leader for over 5 years",
   },
   {
     id: "5",
@@ -165,6 +170,7 @@ export const mockMembers: Member[] = [
     status: "Active",
     created_at: "2022-09-03T00:00:00Z",
     updated_at: "2022-09-03T00:00:00Z",
+    notes: "Regular attendee of prayer meetings",
   },
 ]
 

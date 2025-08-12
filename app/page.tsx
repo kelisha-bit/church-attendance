@@ -1,345 +1,308 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Users, UserPlus, Calendar, TrendingUp, Clock, AlertCircle, Loader2 } from "lucide-react"
+import { Users, UserCheck, Calendar, DollarSign, Camera, FileText, Bell, TrendingUp, Clock, MapPin } from "lucide-react"
+
 import MemberManagement from "@/components/member-management"
-import VisitorCheckin from "@/components/visitor-checkin"
 import AttendanceTracker from "@/components/attendance-tracker"
+import VisitorCheckin from "@/components/visitor-checkin"
 import EventsNotifications from "@/components/events-notifications"
-import Reports from "@/components/reports"
-import CertificatesReports from "@/components/certificates-reports"
-import SignatureManagement from "@/components/signature-management"
 import PhotoManagement from "@/components/photo-management"
-import { supabase, isSupabaseAvailable, mockMembers, mockVisitors } from "@/lib/supabase"
+import Reports from "@/components/reports"
 import DonationManagement from "@/components/donation-management"
+import ProtectedRoute from "@/components/protected-route"
+import AppHeader from "@/components/app-header"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function ChurchAttendanceApp() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState("dashboard")
-  const [stats, setStats] = useState({
-    totalMembers: 0,
-    todayAttendance: 0,
-    todayVisitors: 0,
-    upcomingEvents: 0,
-  })
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
 
-  // Fetch dashboard statistics
-  const fetchStats = async () => {
-    try {
-      setLoading(true)
-
-      if (!isSupabaseAvailable()) {
-        // Use mock data when Supabase is not available
-        setStats({
-          totalMembers: mockMembers.length,
-          todayAttendance: Math.floor(mockMembers.length * 0.75), // 75% attendance
-          todayVisitors: mockVisitors.length,
-          upcomingEvents: 4,
-        })
-
-        setRecentActivity([
-          {
-            id: 1,
-            type: "visitor",
-            name: "Sarah Johnson",
-            action: "checked in",
-            time: "2 hours ago",
-            service: "Sunday Service",
-          },
-          {
-            id: 2,
-            type: "member",
-            name: "Akosua Mensah",
-            action: "marked present",
-            time: "3 hours ago",
-            service: "Sunday Service",
-          },
-          {
-            id: 3,
-            type: "event",
-            name: "Prayer Meeting",
-            action: "scheduled",
-            time: "1 day ago",
-            service: "Prayer Meeting",
-          },
-        ])
-        return
-      }
-
-      // Fetch real data from Supabase
-      const today = new Date().toISOString().split("T")[0]
-
-      const [membersResult, visitorsResult, attendanceResult, eventsResult] = await Promise.all([
-        supabase!.from("members").select("id").eq("status", "Active"),
-        supabase!.from("visitors").select("id").eq("visit_date", today),
-        supabase!.from("attendance_records").select("id").eq("service_date", today).eq("present", true),
-        supabase!.from("events").select("id").gte("event_date", today),
-      ])
-
-      setStats({
-        totalMembers: membersResult.data?.length || 0,
-        todayAttendance: attendanceResult.data?.length || 0,
-        todayVisitors: visitorsResult.data?.length || 0,
-        upcomingEvents: eventsResult.data?.length || 0,
-      })
-
-      // Fetch recent activity
-      const { data: recentVisitors } = await supabase!
-        .from("visitors")
-        .select("name, service, created_at")
-        .order("created_at", { ascending: false })
-        .limit(5)
-
-      const activity = (recentVisitors || []).map((visitor, index) => ({
-        id: index + 1,
-        type: "visitor",
-        name: visitor.name,
-        action: "checked in",
-        time: new Date(visitor.created_at).toLocaleString(),
-        service: visitor.service,
-      }))
-
-      setRecentActivity(activity)
-    } catch (error) {
-      console.error("Error fetching stats:", error)
-      // Fallback to mock data on error
-      setStats({
-        totalMembers: mockMembers.length,
-        todayAttendance: Math.floor(mockMembers.length * 0.75),
-        todayVisitors: mockVisitors.length,
-        upcomingEvents: 4,
-      })
-    } finally {
-      setLoading(false)
-    }
+  // Mock data for dashboard
+  const stats = {
+    totalMembers: 245,
+    presentToday: 189,
+    visitors: 12,
+    totalDonations: 15420.5,
+    upcomingEvents: 3,
+    photosUploaded: 156,
   }
 
-  useEffect(() => {
-    fetchStats()
-  }, [])
+  const recentActivity = [
+    { type: "member", message: "New member Akosua Mensah joined", time: "2 hours ago" },
+    { type: "attendance", message: "189 members checked in for Sunday Service", time: "3 hours ago" },
+    { type: "donation", message: "GHS 500 donation received from Kwame Asante", time: "5 hours ago" },
+    { type: "event", message: "Youth Meeting scheduled for Friday", time: "1 day ago" },
+  ]
 
-  const StatCard = ({ title, value, icon: Icon, description, trend }: any) => (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-amber-600" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-gray-800">
-          {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : value}
-        </div>
-        {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
-        {trend && (
-          <div className="flex items-center mt-2">
-            <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
-            <span className="text-xs text-green-500">{trend}</span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
+  const upcomingEvents = [
+    { title: "Youth Meeting", date: "2024-01-19", time: "18:00", location: "Youth Hall" },
+    { title: "Prayer Meeting", date: "2024-01-21", time: "06:00", location: "Main Sanctuary" },
+    { title: "Bible Study", date: "2024-01-24", time: "19:00", location: "Conference Room" },
+  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      <div className="container mx-auto p-4">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-              <Users className="w-8 h-8 text-white" />
-            </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
+        <AppHeader />
+
+        <div className="container mx-auto p-4 space-y-6">
+          {/* Welcome Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-6">
+            <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name || "User"}! 👋</h1>
+            <p className="text-blue-100">Here's what's happening in your church community today.</p>
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">GreaterWorks City Church</h1>
-          <p className="text-gray-600 text-lg">Attendance & Community Management System</p>
-          <p className="text-sm text-gray-500 mt-2">Accra, Ghana</p>
-        </div>
 
-        {/* Demo Mode Alert */}
-        {!isSupabaseAvailable() && (
-          <Alert className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Demo mode: Add your Supabase environment variables to enable full database functionality.
-            </AlertDescription>
-          </Alert>
-        )}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto p-1">
+              <TabsTrigger value="dashboard" className="flex flex-col items-center gap-1 p-3">
+                <TrendingUp className="h-4 w-4" />
+                <span className="text-xs">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="members" className="flex flex-col items-center gap-1 p-3">
+                <Users className="h-4 w-4" />
+                <span className="text-xs">Members</span>
+              </TabsTrigger>
+              <TabsTrigger value="attendance" className="flex flex-col items-center gap-1 p-3">
+                <UserCheck className="h-4 w-4" />
+                <span className="text-xs">Attendance</span>
+              </TabsTrigger>
+              <TabsTrigger value="visitors" className="flex flex-col items-center gap-1 p-3">
+                <Users className="h-4 w-4" />
+                <span className="text-xs">Visitors</span>
+              </TabsTrigger>
+              <TabsTrigger value="donations" className="flex flex-col items-center gap-1 p-3">
+                <DollarSign className="h-4 w-4" />
+                <span className="text-xs">Donations</span>
+              </TabsTrigger>
+              <TabsTrigger value="events" className="flex flex-col items-center gap-1 p-3">
+                <Calendar className="h-4 w-4" />
+                <span className="text-xs">Events</span>
+              </TabsTrigger>
+              <TabsTrigger value="photos" className="flex flex-col items-center gap-1 p-3">
+                <Camera className="h-4 w-4" />
+                <span className="text-xs">Photos</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex flex-col items-center gap-1 p-3">
+                <FileText className="h-4 w-4" />
+                <span className="text-xs">Reports</span>
+              </TabsTrigger>
+            </TabsList>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10 bg-white/80 backdrop-blur-sm">
-            <TabsTrigger value="dashboard" className="text-xs">
-              Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="members" className="text-xs">
-              Members
-            </TabsTrigger>
-            <TabsTrigger value="visitors" className="text-xs">
-              Visitors
-            </TabsTrigger>
-            <TabsTrigger value="attendance" className="text-xs">
-              Attendance
-            </TabsTrigger>
-            <TabsTrigger value="events" className="text-xs">
-              Events
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="text-xs">
-              Reports
-            </TabsTrigger>
-            <TabsTrigger value="certificates" className="text-xs">
-              Certificates
-            </TabsTrigger>
-            <TabsTrigger value="signatures" className="text-xs">
-              Signatures
-            </TabsTrigger>
-            <TabsTrigger value="photos" className="text-xs">
-              Photos
-            </TabsTrigger>
-            <TabsTrigger value="donations" className="text-xs">
-              Donations
-            </TabsTrigger>
-          </TabsList>
+            {/* Dashboard Tab */}
+            <TabsContent value="dashboard" className="space-y-6">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Members</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats.totalMembers}</div>
+                    <p className="text-xs text-muted-foreground">+12 from last month</p>
+                  </CardContent>
+                </Card>
 
-          <TabsContent value="dashboard" className="space-y-6">
-            {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard
-                title="Total Members"
-                value={stats.totalMembers}
-                icon={Users}
-                description="Active church members"
-                trend="+12% from last month"
-              />
-              <StatCard
-                title="Today's Attendance"
-                value={stats.todayAttendance}
-                icon={Calendar}
-                description="Present in today's service"
-                trend="+5% from last week"
-              />
-              <StatCard
-                title="Today's Visitors"
-                value={stats.todayVisitors}
-                icon={UserPlus}
-                description="New visitors today"
-                trend="+2 from yesterday"
-              />
-              <StatCard
-                title="Upcoming Events"
-                value={stats.upcomingEvents}
-                icon={Clock}
-                description="Scheduled this month"
-              />
-            </div>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Present Today</CardTitle>
+                    <UserCheck className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats.presentToday}</div>
+                    <p className="text-xs text-muted-foreground">77% attendance rate</p>
+                  </CardContent>
+                </Card>
 
-            {/* Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Recent Activity</CardTitle>
-                  <CardDescription>Latest updates from your church community</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800">
-                          <span className="font-semibold">{activity.name}</span> {activity.action}
-                        </p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            {activity.service}
-                          </Badge>
-                          <span className="text-xs text-gray-500">{activity.time}</span>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Visitors Today</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats.visitors}</div>
+                    <p className="text-xs text-muted-foreground">8 first-time visitors</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Donations</CardTitle>
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">GHS {stats.totalDonations.toLocaleString()}</div>
+                    <p className="text-xs text-muted-foreground">+15% from last month</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats.upcomingEvents}</div>
+                    <p className="text-xs text-muted-foreground">This week</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Photos Uploaded</CardTitle>
+                    <Camera className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats.photosUploaded}</div>
+                    <p className="text-xs text-muted-foreground">This month</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recent Activity */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Bell className="h-5 w-5" />
+                      Recent Activity
+                    </CardTitle>
+                    <CardDescription>Latest updates from your church community</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {recentActivity.map((activity, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          {activity.type === "member" && <Users className="h-4 w-4 text-blue-500" />}
+                          {activity.type === "attendance" && <UserCheck className="h-4 w-4 text-green-500" />}
+                          {activity.type === "donation" && <DollarSign className="h-4 w-4 text-yellow-500" />}
+                          {activity.type === "event" && <Calendar className="h-4 w-4 text-purple-500" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-gray-900">{activity.message}</p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {activity.time}
+                          </p>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  {recentActivity.length === 0 && <p className="text-center text-gray-500 py-4">No recent activity</p>}
-                </CardContent>
-              </Card>
+                    ))}
+                  </CardContent>
+                </Card>
 
+                {/* Upcoming Events */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      Upcoming Events
+                    </CardTitle>
+                    <CardDescription>Don't miss these important gatherings</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {upcomingEvents.map((event, index) => (
+                      <div key={index} className="border rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium text-gray-900">{event.title}</h4>
+                          <Badge variant="outline">{event.date}</Badge>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {event.time}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {event.location}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Quick Actions */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
-                  <CardDescription>Common tasks and shortcuts</CardDescription>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common tasks you might want to perform</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button
-                    onClick={() => setActiveTab("visitors")}
-                    className="w-full justify-start bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
-                  >
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Check-in New Visitor
-                  </Button>
-                  <Button
-                    onClick={() => setActiveTab("attendance")}
-                    className="w-full justify-start bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Mark Attendance
-                  </Button>
-                  <Button
-                    onClick={() => setActiveTab("members")}
-                    className="w-full justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    Manage Members
-                  </Button>
-                  <Button
-                    onClick={() => setActiveTab("reports")}
-                    className="w-full justify-start bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-                  >
-                    <TrendingUp className="w-4 h-4 mr-2" />
-                    View Reports
-                  </Button>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <Button
+                      variant="outline"
+                      className="h-auto flex-col gap-2 p-4 bg-transparent"
+                      onClick={() => setActiveTab("members")}
+                    >
+                      <Users className="h-6 w-6" />
+                      Add Member
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto flex-col gap-2 p-4 bg-transparent"
+                      onClick={() => setActiveTab("attendance")}
+                    >
+                      <UserCheck className="h-6 w-6" />
+                      Take Attendance
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto flex-col gap-2 p-4 bg-transparent"
+                      onClick={() => setActiveTab("donations")}
+                    >
+                      <DollarSign className="h-6 w-6" />
+                      Record Donation
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto flex-col gap-2 p-4 bg-transparent"
+                      onClick={() => setActiveTab("events")}
+                    >
+                      <Calendar className="h-6 w-6" />
+                      Create Event
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="members">
-            <MemberManagement />
-          </TabsContent>
+            {/* Other Tabs */}
+            <TabsContent value="members">
+              <MemberManagement />
+            </TabsContent>
 
-          <TabsContent value="visitors">
-            <VisitorCheckin />
-          </TabsContent>
+            <TabsContent value="attendance">
+              <AttendanceTracker />
+            </TabsContent>
 
-          <TabsContent value="attendance">
-            <AttendanceTracker />
-          </TabsContent>
+            <TabsContent value="visitors">
+              <VisitorCheckin />
+            </TabsContent>
 
-          <TabsContent value="events">
-            <EventsNotifications />
-          </TabsContent>
+            <TabsContent value="donations">
+              <DonationManagement />
+            </TabsContent>
 
-          <TabsContent value="reports">
-            <Reports />
-          </TabsContent>
+            <TabsContent value="events">
+              <EventsNotifications />
+            </TabsContent>
 
-          <TabsContent value="certificates">
-            <CertificatesReports />
-          </TabsContent>
+            <TabsContent value="photos">
+              <PhotoManagement />
+            </TabsContent>
 
-          <TabsContent value="signatures">
-            <SignatureManagement />
-          </TabsContent>
-
-          <TabsContent value="photos">
-            <PhotoManagement />
-          </TabsContent>
-
-          <TabsContent value="donations">
-            <DonationManagement />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="reports">
+              <Reports />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   )
 }

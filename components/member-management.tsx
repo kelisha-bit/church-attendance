@@ -27,10 +27,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Users, Plus, Search, Trash2, Edit, Phone, Mail, MapPin, Calendar, Camera, Loader2 } from "lucide-react"
+import { Users, Plus, Search, Trash2, Phone, Mail, MapPin, Calendar, Camera, Loader2, User } from "lucide-react"
 import { supabase, isSupabaseAvailable, mockMembers, type Member } from "@/lib/supabase"
 import { toast } from "sonner"
 import PhotoUpload from "@/components/photo-upload"
+import MemberProfile from "@/components/member-profile"
 
 interface MemberManagementProps {
   onStatsUpdate?: () => void
@@ -51,6 +52,7 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
     address: "",
     department: "",
   })
+  const [profileMemberId, setProfileMemberId] = useState<string | null>(null)
 
   const departments = [
     "Choir",
@@ -397,8 +399,14 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm">
-                        <Edit className="h-4 w-4" />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setProfileMemberId(member.id)}
+                        className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
+                      >
+                        <User className="h-4 w-4 mr-1" />
+                        Profile
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -455,6 +463,9 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Member Profile Dialog */}
+      {profileMemberId && <MemberProfile memberId={profileMemberId} onClose={() => setProfileMemberId(null)} />}
     </Card>
   )
 }
