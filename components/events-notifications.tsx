@@ -121,58 +121,96 @@ export default function EventsNotifications() {
                 Add New Event
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Add New Event</DialogTitle>
-                <DialogDescription>Create a new church event</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="eventTitle">Event Title</Label>
-                  <Input id="eventTitle" placeholder="Enter event title" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+            <DialogContent className="bg-white border-2 border-gray-200 shadow-2xl max-w-md">
+              <div className="bg-white p-2 rounded-lg">
+                <DialogHeader className="bg-white">
+                  <DialogTitle className="text-gray-900">Add New Event</DialogTitle>
+                  <DialogDescription className="text-gray-600">Create a new church event</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 bg-white p-4 rounded-lg">
                   <div>
-                    <Label htmlFor="eventDate">Date</Label>
-                    <Input id="eventDate" type="date" />
+                    <Label htmlFor="eventTitle" className="text-gray-700 font-medium">
+                      Event Title
+                    </Label>
+                    <Input
+                      id="eventTitle"
+                      placeholder="Enter event title"
+                      className="bg-white border-gray-300 focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="eventDate" className="text-gray-700 font-medium">
+                        Date
+                      </Label>
+                      <Input id="eventDate" type="date" className="bg-white border-gray-300 focus:border-blue-500" />
+                    </div>
+                    <div>
+                      <Label htmlFor="eventTime" className="text-gray-700 font-medium">
+                        Time
+                      </Label>
+                      <Input id="eventTime" type="time" className="bg-white border-gray-300 focus:border-blue-500" />
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor="eventTime">Time</Label>
-                    <Input id="eventTime" type="time" />
+                    <Label htmlFor="eventLocation" className="text-gray-700 font-medium">
+                      Location
+                    </Label>
+                    <Input
+                      id="eventLocation"
+                      placeholder="Event location"
+                      className="bg-white border-gray-300 focus:border-blue-500"
+                    />
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="eventLocation">Location</Label>
-                  <Input id="eventLocation" placeholder="Event location" />
-                </div>
-                <div>
-                  <Label htmlFor="eventDescription">Description</Label>
-                  <Textarea id="eventDescription" placeholder="Event description" />
-                </div>
-                <div>
-                  <Label htmlFor="recurring">Recurring</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select frequency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex gap-3 pt-4">
-                  <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowEventDialog(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600"
-                    onClick={() => setShowEventDialog(false)}
-                  >
-                    Create Event
-                  </Button>
+                  <div>
+                    <Label htmlFor="eventDescription" className="text-gray-700 font-medium">
+                      Description
+                    </Label>
+                    <Textarea
+                      id="eventDescription"
+                      placeholder="Event description"
+                      className="bg-white border-gray-300 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="recurring" className="text-gray-700 font-medium">
+                      Recurring
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500">
+                        <SelectValue placeholder="Select frequency" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-gray-200">
+                        <SelectItem value="none" className="hover:bg-blue-50">
+                          None
+                        </SelectItem>
+                        <SelectItem value="weekly" className="hover:bg-blue-50">
+                          Weekly
+                        </SelectItem>
+                        <SelectItem value="monthly" className="hover:bg-blue-50">
+                          Monthly
+                        </SelectItem>
+                        <SelectItem value="yearly" className="hover:bg-blue-50">
+                          Yearly
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      variant="outline"
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      onClick={() => setShowEventDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                      onClick={() => setShowEventDialog(false)}
+                    >
+                      Create Event
+                    </Button>
+                  </div>
                 </div>
               </div>
             </DialogContent>
@@ -213,10 +251,10 @@ export default function EventsNotifications() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600">
+                      <Button variant="outline" size="sm" className="text-red-600 bg-white hover:bg-red-50">
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -247,50 +285,81 @@ export default function EventsNotifications() {
                 Send Custom Notification
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Send Notification</DialogTitle>
-                <DialogDescription>Send a custom message to church members</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="notificationTitle">Title</Label>
-                  <Input id="notificationTitle" placeholder="Notification title" />
-                </div>
-                <div>
-                  <Label htmlFor="notificationMessage">Message</Label>
-                  <Textarea id="notificationMessage" placeholder="Type your message here..." rows={4} />
-                </div>
-                <div>
-                  <Label htmlFor="recipients">Recipients</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select recipients" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Members</SelectItem>
-                      <SelectItem value="choir">Choir Members</SelectItem>
-                      <SelectItem value="ushering">Ushering Team</SelectItem>
-                      <SelectItem value="youth">Youth Ministry</SelectItem>
-                      <SelectItem value="prayer">Prayer Team</SelectItem>
-                      <SelectItem value="leaders">Church Leaders</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    variant="outline"
-                    className="flex-1 bg-transparent"
-                    onClick={() => setShowNotificationDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600"
-                    onClick={() => setShowNotificationDialog(false)}
-                  >
-                    Send Now
-                  </Button>
+            <DialogContent className="bg-white border-2 border-gray-200 shadow-2xl max-w-md">
+              <div className="bg-white p-2 rounded-lg">
+                <DialogHeader className="bg-white">
+                  <DialogTitle className="text-gray-900">Send Notification</DialogTitle>
+                  <DialogDescription className="text-gray-600">
+                    Send a custom message to church members
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 bg-white p-4 rounded-lg">
+                  <div>
+                    <Label htmlFor="notificationTitle" className="text-gray-700 font-medium">
+                      Title
+                    </Label>
+                    <Input
+                      id="notificationTitle"
+                      placeholder="Notification title"
+                      className="bg-white border-gray-300 focus:border-green-500"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="notificationMessage" className="text-gray-700 font-medium">
+                      Message
+                    </Label>
+                    <Textarea
+                      id="notificationMessage"
+                      placeholder="Type your message here..."
+                      rows={4}
+                      className="bg-white border-gray-300 focus:border-green-500"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="recipients" className="text-gray-700 font-medium">
+                      Recipients
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="bg-white border-gray-300 focus:border-green-500">
+                        <SelectValue placeholder="Select recipients" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-gray-200">
+                        <SelectItem value="all" className="hover:bg-green-50">
+                          All Members
+                        </SelectItem>
+                        <SelectItem value="choir" className="hover:bg-green-50">
+                          Choir Members
+                        </SelectItem>
+                        <SelectItem value="ushering" className="hover:bg-green-50">
+                          Ushering Team
+                        </SelectItem>
+                        <SelectItem value="youth" className="hover:bg-green-50">
+                          Youth Ministry
+                        </SelectItem>
+                        <SelectItem value="prayer" className="hover:bg-green-50">
+                          Prayer Team
+                        </SelectItem>
+                        <SelectItem value="leaders" className="hover:bg-green-50">
+                          Church Leaders
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      variant="outline"
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      onClick={() => setShowNotificationDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white"
+                      onClick={() => setShowNotificationDialog(false)}
+                    >
+                      Send Now
+                    </Button>
+                  </div>
                 </div>
               </div>
             </DialogContent>

@@ -2,19 +2,22 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Upload, Trash2, RotateCcw, Save, X, ImageIcon } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Camera, Upload, Trash2, AlertCircle, Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 interface PhotoUploadProps {
-  currentPhoto: string
-  memberName: string
-  onPhotoUpdate: (photoUrl: string) => void
-  onPhotoRemove: () => void
-  onClose: () => void
+  currentPhoto?: string
+  memberName?: string
+  onPhotoUpdate?: (photoUrl: string) => void
+  onPhotoRemove?: () => void
+  onClose?: () => void
 }
 
 export default function PhotoUpload({
@@ -24,238 +27,176 @@ export default function PhotoUpload({
   onPhotoRemove,
   onClose,
 }: PhotoUploadProps) {
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null)
-  const [isCapturing, setIsCapturing] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentPhoto || null)
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        alert("File size must be less than 5MB")
-        return
-      }
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
 
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file")
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB")
+      return
+    }
+
+    try {
+      setUploading(true)
+
+      // Create preview URL
       const reader = new FileReader()
-      reader.onload = (event) => {
-        const result = event.target?.result as string
-        setPreviewPhoto(result)
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        setPreviewUrl(result)
       }
       reader.readAsDataURL(file)
-    }
-  }
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: "user",
-        },
+      // In a real app, you would upload to Supabase Storage here
+      // For demo purposes, we'll use the data URL
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => resolve(e.target?.result as string)
+        reader.readAsDataURL(file)
       })
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        streamRef.current = stream
-        setIsCapturing(true)
-      }
+      // Simulate upload delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      onPhotoUpdate?.(dataUrl)
+      toast.success("Photo uploaded successfully!")
     } catch (error) {
-      console.error("Error accessing camera:", error)
-      alert("Unable to access camera. Please check permissions or use file upload instead.")
+      console.error("Error uploading photo:", error)
+      toast.error("Failed to upload photo")
+    } finally {
+      setUploading(false)
     }
   }
 
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current
-      const video = videoRef.current
-      const ctx = canvas.getContext("2d")
-
-      if (ctx) {
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-        ctx.drawImage(video, 0, 0)
-
-        const photoUrl = canvas.toDataURL("image/jpeg", 0.8)
-        setPreviewPhoto(photoUrl)
-        stopCamera()
-      }
-    }
-  }
-
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-    }
-    setIsCapturing(false)
-  }
-
-  const savePhoto = () => {
-    if (previewPhoto) {
-      // In a real app, you would upload to a server or cloud storage
-      // For now, we'll use the data URL directly
-      onPhotoUpdate(previewPhoto)
-    }
-  }
-
-  const resetPreview = () => {
-    setPreviewPhoto(null)
-    stopCamera()
-  }
-
-  const removePhoto = () => {
-    onPhotoRemove()
-    onClose()
+  const handleRemovePhoto = () => {
+    setPreviewUrl(null)
+    onPhotoRemove?.()
+    toast.success("Photo removed successfully!")
   }
 
   return (
-    <div className="space-y-6">
-      {/* Current Photo Display */}
-      <div className="text-center space-y-3">
-        <Avatar className="w-24 h-24 mx-auto">
-          <AvatarImage src={previewPhoto || currentPhoto} alt={memberName} />
-          <AvatarFallback className="bg-gradient-to-br from-amber-400 to-orange-500 text-white text-2xl">
-            {memberName
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h3 className="font-semibold text-gray-800">{memberName}</h3>
-          <p className="text-sm text-gray-600">{previewPhoto ? "New photo preview" : "Current photo"}</p>
-        </div>
-      </div>
-
-      {/* Photo Upload Options */}
-      {!previewPhoto && !isCapturing && (
-        <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload">Upload File</TabsTrigger>
-            <TabsTrigger value="camera">Take Photo</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="upload" className="space-y-4">
-            <Alert>
-              <ImageIcon className="h-4 w-4" />
-              <AlertDescription>
-                Upload a clear photo of the member. Supported formats: JPG, PNG. Maximum size: 5MB.
-              </AlertDescription>
-            </Alert>
-
-            <div
-              className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-lg font-medium text-gray-700 mb-2">Upload Photo</p>
-              <p className="text-sm text-gray-500">Click here to select a file from your device</p>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="camera" className="space-y-4">
-            <Alert>
-              <Camera className="h-4 w-4" />
-              <AlertDescription>
-                Take a photo using your device's camera. Make sure the member is well-lit and centered.
-              </AlertDescription>
-            </Alert>
-
-            <div className="text-center">
-              <Button
-                onClick={startCamera}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-              >
-                <Camera className="w-4 h-4 mr-2" />
-                Start Camera
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
-      )}
-
-      {/* Camera View */}
-      {isCapturing && (
-        <div className="space-y-4">
-          <div className="relative bg-black rounded-lg overflow-hidden">
-            <video ref={videoRef} autoPlay playsInline className="w-full h-64 object-cover" />
-            <div className="absolute inset-0 border-2 border-white/30 rounded-lg pointer-events-none">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white rounded-full"></div>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <Button onClick={stopCamera} variant="outline" className="flex-1 bg-transparent">
-              <X className="w-4 h-4 mr-2" />
-              Cancel
-            </Button>
-            <Button
-              onClick={capturePhoto}
-              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              Capture
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Photo Preview Actions */}
-      {previewPhoto && (
-        <div className="space-y-4">
-          <Alert>
-            <ImageIcon className="h-4 w-4" />
-            <AlertDescription>
-              Preview your new photo above. Click "Save Photo" to update the member's profile.
+    <div className="bg-white p-4 rounded-lg">
+      <Card className="w-full max-w-md mx-auto bg-white border-gray-200">
+        <CardHeader className="bg-white">
+          <CardTitle className="flex items-center gap-2 text-gray-900">
+            <Camera className="h-5 w-5" />
+            {memberName ? `Photo for ${memberName}` : "Upload Photo"}
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Upload a profile photo. Supported formats: JPG, PNG, GIF (max 5MB)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6 bg-white">
+          {/* Demo Mode Alert */}
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-700">
+              Demo mode: Photos are stored locally and will be lost on page refresh.
             </AlertDescription>
           </Alert>
 
-          <div className="flex gap-3">
-            <Button onClick={resetPreview} variant="outline" className="flex-1 bg-transparent">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Try Again
-            </Button>
-            <Button
-              onClick={savePhoto}
-              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Photo
-            </Button>
+          {/* Photo Preview */}
+          <div className="flex justify-center">
+            <div className="relative">
+              <Avatar className="w-32 h-32">
+                <AvatarImage src={previewUrl || "/placeholder.svg"} alt="Profile photo" />
+                <AvatarFallback className="bg-gradient-to-br from-amber-400 to-orange-500 text-white text-4xl">
+                  {memberName
+                    ? memberName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                    : "?"}
+                </AvatarFallback>
+              </Avatar>
+              {previewUrl && (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 rounded-full w-8 h-8 p-0"
+                  onClick={handleRemovePhoto}
+                  disabled={uploading}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Remove Photo Option */}
-      {!previewPhoto && !isCapturing && currentPhoto && !currentPhoto.includes("placeholder") && (
-        <div className="border-t pt-4">
-          <Button
-            onClick={removePhoto}
-            variant="outline"
-            className="w-full border-red-200 text-red-600 hover:bg-red-50 bg-transparent"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Remove Current Photo
-          </Button>
-        </div>
-      )}
+          {/* Upload Controls */}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="photo-upload" className="text-gray-700 font-medium">
+                Select Photo
+              </Label>
+              <Input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                disabled={uploading}
+                className="cursor-pointer bg-white border-gray-300 focus:border-amber-500"
+              />
+            </div>
 
-      {/* Close Button */}
-      <div className="border-t pt-4">
-        <Button onClick={onClose} variant="outline" className="w-full bg-transparent">
-          Close
-        </Button>
-      </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700"
+                onClick={onClose}
+                disabled={uploading}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                disabled={uploading || !previewUrl}
+                onClick={() => {
+                  if (previewUrl) {
+                    onPhotoUpdate?.(previewUrl)
+                  }
+                  onClose?.()
+                }}
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Save Photo
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
 
-      {/* Hidden canvas for photo capture */}
-      <canvas ref={canvasRef} className="hidden" />
+          {/* Upload Tips */}
+          <div className="text-sm text-gray-600 space-y-1 bg-gray-50 p-3 rounded-lg">
+            <p>
+              <strong>Tips for best results:</strong>
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-xs">
+              <li>Use a clear, well-lit photo</li>
+              <li>Face should be clearly visible</li>
+              <li>Square aspect ratio works best</li>
+              <li>Keep file size under 5MB</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
