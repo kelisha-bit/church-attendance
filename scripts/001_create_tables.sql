@@ -66,6 +66,22 @@ CREATE TABLE signatures (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Donations table
+CREATE TABLE donations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    member_id UUID REFERENCES members(id) ON DELETE SET NULL,
+    donor_name VARCHAR(255) NOT NULL,
+    donor_phone VARCHAR(20),
+    donor_email VARCHAR(255),
+    amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
+    donation_type VARCHAR(100) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    donation_date DATE NOT NULL,
+    notes TEXT,
+    receipt_number VARCHAR(50) NOT NULL UNIQUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_members_department ON members(department);
 CREATE INDEX idx_members_status ON members(status);
@@ -73,6 +89,10 @@ CREATE INDEX idx_visitors_visit_date ON visitors(visit_date);
 CREATE INDEX idx_attendance_service_date ON attendance_records(service_date);
 CREATE INDEX idx_attendance_member_id ON attendance_records(member_id);
 CREATE INDEX idx_events_event_date ON events(event_date);
+CREATE INDEX idx_donations_member_id ON donations(member_id);
+CREATE INDEX idx_donations_date ON donations(donation_date);
+CREATE INDEX idx_donations_type ON donations(donation_type);
+CREATE INDEX idx_donations_receipt ON donations(receipt_number);
 
 -- Create updated_at trigger for members table
 CREATE OR REPLACE FUNCTION update_updated_at_column()

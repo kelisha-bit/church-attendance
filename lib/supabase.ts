@@ -81,6 +81,29 @@ export interface Signature {
   created_at: string
 }
 
+export interface Donation {
+  id: string
+  member_id?: string
+  donor_name: string
+  donor_phone?: string
+  donor_email?: string
+  amount: number
+  donation_type: string
+  payment_method: string
+  donation_date: string
+  notes?: string
+  receipt_number: string
+  created_at: string
+}
+
+export interface DonationSummary {
+  total_amount: number
+  donation_count: number
+  average_donation: number
+  top_donor: string
+  most_common_type: string
+}
+
 // Mock data for when Supabase is not available
 export const mockMembers: Member[] = [
   {
@@ -213,5 +236,71 @@ export const mockAttendanceRecords: AttendanceRecord[] = [
     service_type: "Sunday Service",
     present: false,
     created_at: new Date().toISOString(),
+  },
+]
+
+export const mockDonations: Donation[] = [
+  {
+    id: "1",
+    member_id: "1",
+    donor_name: "Akosua Mensah",
+    donor_phone: "+233 24 123 4567",
+    donor_email: "akosua.mensah@email.com",
+    amount: 500.0,
+    donation_type: "Tithe",
+    payment_method: "Mobile Money",
+    donation_date: new Date().toISOString().split("T")[0],
+    notes: "Monthly tithe",
+    receipt_number: "RCP001",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "2",
+    member_id: "2",
+    donor_name: "Kwame Asante",
+    donor_phone: "+233 20 987 6543",
+    amount: 200.0,
+    donation_type: "Offering",
+    payment_method: "Cash",
+    donation_date: new Date().toISOString().split("T")[0],
+    receipt_number: "RCP002",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "3",
+    donor_name: "Anonymous Donor",
+    donor_phone: "+233 26 555 0000",
+    amount: 1000.0,
+    donation_type: "Building Fund",
+    payment_method: "Bank Transfer",
+    donation_date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
+    notes: "For new sanctuary construction",
+    receipt_number: "RCP003",
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: "4",
+    member_id: "3",
+    donor_name: "Ama Osei",
+    donor_phone: "+233 26 555 7890",
+    amount: 150.0,
+    donation_type: "Special Offering",
+    payment_method: "Mobile Money",
+    donation_date: new Date(Date.now() - 172800000).toISOString().split("T")[0],
+    notes: "Missions support",
+    receipt_number: "RCP004",
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+  },
+  {
+    id: "5",
+    member_id: "4",
+    donor_name: "Kofi Boateng",
+    donor_phone: "+233 54 321 9876",
+    amount: 300.0,
+    donation_type: "Tithe",
+    payment_method: "Cash",
+    donation_date: new Date(Date.now() - 259200000).toISOString().split("T")[0],
+    receipt_number: "RCP005",
+    created_at: new Date(Date.now() - 259200000).toISOString(),
   },
 ]

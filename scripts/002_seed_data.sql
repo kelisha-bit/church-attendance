@@ -35,3 +35,14 @@ INSERT INTO events (title, description, event_date, event_time, location) VALUES
 -- Insert sample signature
 INSERT INTO signatures (name, title, signature_url, is_active) VALUES
 ('Pastor John Mensah', 'Senior Pastor', '/placeholder.svg?height=100&width=200&text=Pastor+Signature', true);
+
+-- Insert sample donations
+INSERT INTO donations (member_id, donor_name, donor_phone, donor_email, amount, donation_type, payment_method, donation_date, notes, receipt_number) VALUES
+((SELECT id FROM members WHERE name = 'Akosua Mensah'), 'Akosua Mensah', '+233 24 123 4567', 'akosua.mensah@email.com', 500.00, 'Tithe', 'Mobile Money', CURRENT_DATE, 'Monthly tithe', 'RCP001'),
+((SELECT id FROM members WHERE name = 'Kwame Asante'), 'Kwame Asante', '+233 20 987 6543', NULL, 200.00, 'Offering', 'Cash', CURRENT_DATE, NULL, 'RCP002'),
+(NULL, 'Anonymous Donor', '+233 26 555 0000', NULL, 1000.00, 'Building Fund', 'Bank Transfer', CURRENT_DATE - INTERVAL '1 day', 'For new sanctuary construction', 'RCP003'),
+((SELECT id FROM members WHERE name = 'Ama Osei'), 'Ama Osei', '+233 26 555 7890', 'ama.osei@email.com', 150.00, 'Special Offering', 'Mobile Money', CURRENT_DATE - INTERVAL '2 days', 'Missions support', 'RCP004'),
+((SELECT id FROM members WHERE name = 'Kofi Boateng'), 'Kofi Boateng', '+233 54 321 9876', 'kofi.boateng@email.com', 300.00, 'Tithe', 'Cash', CURRENT_DATE - INTERVAL '3 days', NULL, 'RCP005'),
+((SELECT id FROM members WHERE name = 'Efua Darko'), 'Efua Darko', '+233 27 654 3210', 'efua.darko@email.com', 75.00, 'Thanksgiving', 'Mobile Money', CURRENT_DATE - INTERVAL '4 days', 'Thanksgiving offering', 'RCP006'),
+(NULL, 'John Visitor', '+233 55 999 8888', NULL, 50.00, 'Offering', 'Cash', CURRENT_DATE - INTERVAL '5 days', 'First time visitor', 'RCP007'),
+((SELECT id FROM members WHERE name = 'Yaw Mensah'), 'Yaw Mensah', '+233 55 111 2222', 'yaw.mensah@email.com', 250.00, 'Seed Offering', 'Bank Transfer', CURRENT_DATE - INTERVAL '6 days', 'Seed for breakthrough', 'RCP008');

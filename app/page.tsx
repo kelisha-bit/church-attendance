@@ -16,6 +16,7 @@ import CertificatesReports from "@/components/certificates-reports"
 import SignatureManagement from "@/components/signature-management"
 import PhotoManagement from "@/components/photo-management"
 import { supabase, isSupabaseAvailable, mockMembers, mockVisitors } from "@/lib/supabase"
+import DonationManagement from "@/components/donation-management"
 
 export default function ChurchAttendanceApp() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -170,7 +171,7 @@ export default function ChurchAttendanceApp() {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 bg-white/80 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10 bg-white/80 backdrop-blur-sm">
             <TabsTrigger value="dashboard" className="text-xs">
               Dashboard
             </TabsTrigger>
@@ -197,6 +198,9 @@ export default function ChurchAttendanceApp() {
             </TabsTrigger>
             <TabsTrigger value="photos" className="text-xs">
               Photos
+            </TabsTrigger>
+            <TabsTrigger value="donations" className="text-xs">
+              Donations
             </TabsTrigger>
           </TabsList>
 
@@ -329,6 +333,10 @@ export default function ChurchAttendanceApp() {
 
           <TabsContent value="photos">
             <PhotoManagement />
+          </TabsContent>
+
+          <TabsContent value="donations">
+            <DonationManagement />
           </TabsContent>
         </Tabs>
       </div>
