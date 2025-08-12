@@ -40,7 +40,7 @@ import PhotoUpload from "@/components/photo-upload"
 
 interface MemberProfileProps {
   memberId: string
-  onClose: () => void
+  onBack: () => void
 }
 
 interface AttendanceStats {
@@ -59,7 +59,7 @@ interface DonationStats {
   favoriteType: string
 }
 
-export default function MemberProfile({ memberId, onClose }: MemberProfileProps) {
+export default function MemberProfile({ memberId, onBack }: MemberProfileProps) {
   const [member, setMember] = useState<Member | null>(null)
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
   const [donationRecords, setDonationRecords] = useState<Donation[]>([])
@@ -369,7 +369,7 @@ export default function MemberProfile({ memberId, onClose }: MemberProfileProps)
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="flex items-center justify-center py-8">
             <div className="text-center">
@@ -384,12 +384,12 @@ export default function MemberProfile({ memberId, onClose }: MemberProfileProps)
 
   if (!member) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="text-center py-8">
             <p className="text-gray-600">Member not found</p>
-            <Button onClick={onClose} className="mt-4">
-              Close
+            <Button onClick={onBack} className="mt-4">
+              Back to Members
             </Button>
           </CardContent>
         </Card>
@@ -398,13 +398,13 @@ export default function MemberProfile({ memberId, onClose }: MemberProfileProps)
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white p-6">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={onClose} className="text-white hover:bg-white/20 p-2">
+              <Button variant="ghost" size="sm" onClick={onBack} className="text-white hover:bg-white/20 p-2">
                 <ChevronLeft className="h-5 w-5" />
               </Button>
               <div className="relative">
@@ -463,444 +463,440 @@ export default function MemberProfile({ memberId, onClose }: MemberProfileProps)
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="attendance">Attendance</TabsTrigger>
-              <TabsTrigger value="donations">Donations</TabsTrigger>
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-            </TabsList>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-6">
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="attendance">Attendance</TabsTrigger>
+            <TabsTrigger value="donations">Donations</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
+          </TabsList>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-6">
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <UserCheck className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-green-600">
-                      {attendanceStats.attendanceRate.toFixed(1)}%
-                    </div>
-                    <div className="text-sm text-gray-600">Attendance Rate</div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Activity className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-blue-600">{attendanceStats.streak}</div>
-                    <div className="text-sm text-gray-600">Current Streak</div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <DollarSign className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-orange-600">GHS {donationStats.totalAmount.toFixed(2)}</div>
-                    <div className="text-sm text-gray-600">Total Donations</div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Heart className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-red-600">
-                      {Math.floor(
-                        (new Date().getTime() - new Date(member.join_date).getTime()) / (1000 * 60 * 60 * 24 * 365),
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600">Years Member</div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Quick Info */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      Contact Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <Phone className="h-4 w-4 text-gray-500" />
-                      <span>{member.phone}</span>
-                    </div>
-                    {member.email && (
-                      <div className="flex items-center gap-3">
-                        <Mail className="h-4 w-4 text-gray-500" />
-                        <span>{member.email}</span>
-                      </div>
-                    )}
-                    {member.address && (
-                      <div className="flex items-center gap-3">
-                        <MapPin className="h-4 w-4 text-gray-500" />
-                        <span>{member.address}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span>Joined {new Date(member.join_date).toLocaleDateString()}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      Recent Activity
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {attendanceStats.lastAttendance && (
-                      <div className="flex items-center gap-3">
-                        <UserCheck className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">
-                          Last attended on {new Date(attendanceStats.lastAttendance).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                    {donationStats.lastDonation && (
-                      <div className="flex items-center gap-3">
-                        <DollarSign className="h-4 w-4 text-orange-500" />
-                        <span className="text-sm">
-                          Last donation on {new Date(donationStats.lastDonation).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <Award className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm">Favorite donation type: {donationStats.favoriteType}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            {/* Attendance Tab */}
-            <TabsContent value="attendance" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <CalendarDays className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-                    <div className="text-xl font-bold">{attendanceStats.totalServices}</div>
-                    <div className="text-sm text-gray-600">Total Services</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <UserCheck className="h-6 w-6 text-green-500 mx-auto mb-2" />
-                    <div className="text-xl font-bold">{attendanceStats.attendedServices}</div>
-                    <div className="text-sm text-gray-600">Attended</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <UserX className="h-6 w-6 text-red-500 mx-auto mb-2" />
-                    <div className="text-xl font-bold">
-                      {attendanceStats.totalServices - attendanceStats.attendedServices}
-                    </div>
-                    <div className="text-sm text-gray-600">Missed</div>
-                  </CardContent>
-                </Card>
-              </div>
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <UserCheck className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-green-600">{attendanceStats.attendanceRate.toFixed(1)}%</div>
+                  <div className="text-sm text-gray-600">Attendance Rate</div>
+                </CardContent>
+              </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle>Attendance History</CardTitle>
-                  <CardDescription>Complete record of service attendance</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {attendanceRecords.map((record) => (
-                      <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          {record.present ? (
-                            <UserCheck className="h-5 w-5 text-green-500" />
-                          ) : (
-                            <UserX className="h-5 w-5 text-red-500" />
-                          )}
-                          <div>
-                            <div className="font-medium">{record.service_type}</div>
-                            <div className="text-sm text-gray-600">
-                              {new Date(record.service_date).toLocaleDateString()}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant={record.present ? "default" : "secondary"}>
-                            {record.present ? "Present" : "Absent"}
-                          </Badge>
-                          {record.check_in_time && (
-                            <div className="text-xs text-gray-500 mt-1">Check-in: {record.check_in_time}</div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    {attendanceRecords.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">No attendance records found</div>
+                <CardContent className="p-4 text-center">
+                  <Activity className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-blue-600">{attendanceStats.streak}</div>
+                  <div className="text-sm text-gray-600">Current Streak</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <DollarSign className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-orange-600">GHS {donationStats.totalAmount.toFixed(2)}</div>
+                  <div className="text-sm text-gray-600">Total Donations</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Heart className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-red-600">
+                    {Math.floor(
+                      (new Date().getTime() - new Date(member.join_date).getTime()) / (1000 * 60 * 60 * 24 * 365),
                     )}
+                  </div>
+                  <div className="text-sm text-gray-600">Years Member</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Contact Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-gray-500" />
+                    <span>{member.phone}</span>
+                  </div>
+                  {member.email && (
+                    <div className="flex items-center gap-3">
+                      <Mail className="h-4 w-4 text-gray-500" />
+                      <span>{member.email}</span>
+                    </div>
+                  )}
+                  {member.address && (
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-4 w-4 text-gray-500" />
+                      <span>{member.address}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <span>Joined {new Date(member.join_date).toLocaleDateString()}</span>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-
-            {/* Donations Tab */}
-            <TabsContent value="donations" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Receipt className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-                    <div className="text-xl font-bold">{donationStats.totalDonations}</div>
-                    <div className="text-sm text-gray-600">Total Donations</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <DollarSign className="h-6 w-6 text-green-500 mx-auto mb-2" />
-                    <div className="text-xl font-bold">GHS {donationStats.totalAmount.toFixed(2)}</div>
-                    <div className="text-sm text-gray-600">Total Amount</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <TrendingUp className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-                    <div className="text-xl font-bold">GHS {donationStats.averageDonation.toFixed(2)}</div>
-                    <div className="text-sm text-gray-600">Average Donation</div>
-                  </CardContent>
-                </Card>
-              </div>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Donation History</CardTitle>
-                  <CardDescription>Complete record of all donations</CardDescription>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Recent Activity
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {donationRecords.map((donation) => (
-                      <div key={donation.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <DollarSign className="h-5 w-5 text-green-500" />
-                          <div>
-                            <div className="font-medium">GHS {donation.amount.toFixed(2)}</div>
-                            <div className="text-sm text-gray-600">
-                              {new Date(donation.donation_date).toLocaleDateString()}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">{donation.donation_type}</Badge>
-                          <div className="text-xs text-gray-500 mt-1">{donation.payment_method}</div>
-                          <div className="text-xs text-gray-500">Receipt: {donation.receipt_number}</div>
-                        </div>
-                      </div>
-                    ))}
-                    {donationRecords.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">No donation records found</div>
-                    )}
+                <CardContent className="space-y-3">
+                  {attendanceStats.lastAttendance && (
+                    <div className="flex items-center gap-3">
+                      <UserCheck className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">
+                        Last attended on {new Date(attendanceStats.lastAttendance).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                  {donationStats.lastDonation && (
+                    <div className="flex items-center gap-3">
+                      <DollarSign className="h-4 w-4 text-orange-500" />
+                      <span className="text-sm">
+                        Last donation on {new Date(donationStats.lastDonation).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Award className="h-4 w-4 text-purple-500" />
+                    <span className="text-sm">Favorite donation type: {donationStats.favoriteType}</span>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+            </div>
+          </TabsContent>
 
-            {/* Details Tab */}
-            <TabsContent value="details" className="space-y-6">
+          {/* Attendance Tab */}
+          <TabsContent value="attendance" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Member Details</CardTitle>
-                  <CardDescription>{isEditing ? "Edit member information" : "View member information"}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {isEditing ? (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="p-4 text-center">
+                  <CalendarDays className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+                  <div className="text-xl font-bold">{attendanceStats.totalServices}</div>
+                  <div className="text-sm text-gray-600">Total Services</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <UserCheck className="h-6 w-6 text-green-500 mx-auto mb-2" />
+                  <div className="text-xl font-bold">{attendanceStats.attendedServices}</div>
+                  <div className="text-sm text-gray-600">Attended</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <UserX className="h-6 w-6 text-red-500 mx-auto mb-2" />
+                  <div className="text-xl font-bold">
+                    {attendanceStats.totalServices - attendanceStats.attendedServices}
+                  </div>
+                  <div className="text-sm text-gray-600">Missed</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Attendance History</CardTitle>
+                <CardDescription>Complete record of service attendance</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {attendanceRecords.map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        {record.present ? (
+                          <UserCheck className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <UserX className="h-5 w-5 text-red-500" />
+                        )}
                         <div>
-                          <Label htmlFor="name">Full Name</Label>
-                          <Input
-                            id="name"
-                            value={editForm.name}
-                            onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="phone">Phone Number</Label>
-                          <Input
-                            id="phone"
-                            value={editForm.phone}
-                            onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="email">Email Address</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={editForm.email}
-                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="department">Department</Label>
-                          <Select
-                            value={editForm.department}
-                            onValueChange={(value) => setEditForm({ ...editForm, department: value })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {departments.map((dept) => (
-                                <SelectItem key={dept} value={dept}>
-                                  {dept}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor="status">Status</Label>
-                          <Select
-                            value={editForm.status}
-                            onValueChange={(value: "Active" | "Inactive") =>
-                              setEditForm({ ...editForm, status: value })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Active">Active</SelectItem>
-                              <SelectItem value="Inactive">Inactive</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <div className="font-medium">{record.service_type}</div>
+                          <div className="text-sm text-gray-600">
+                            {new Date(record.service_date).toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
+                      <div className="text-right">
+                        <Badge variant={record.present ? "default" : "secondary"}>
+                          {record.present ? "Present" : "Absent"}
+                        </Badge>
+                        {record.check_in_time && (
+                          <div className="text-xs text-gray-500 mt-1">Check-in: {record.check_in_time}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {attendanceRecords.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">No attendance records found</div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Donations Tab */}
+          <TabsContent value="donations" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <Receipt className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+                  <div className="text-xl font-bold">{donationStats.totalDonations}</div>
+                  <div className="text-sm text-gray-600">Total Donations</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <DollarSign className="h-6 w-6 text-green-500 mx-auto mb-2" />
+                  <div className="text-xl font-bold">GHS {donationStats.totalAmount.toFixed(2)}</div>
+                  <div className="text-sm text-gray-600">Total Amount</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <TrendingUp className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+                  <div className="text-xl font-bold">GHS {donationStats.averageDonation.toFixed(2)}</div>
+                  <div className="text-sm text-gray-600">Average Donation</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Donation History</CardTitle>
+                <CardDescription>Complete record of all donations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {donationRecords.map((donation) => (
+                    <div key={donation.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <DollarSign className="h-5 w-5 text-green-500" />
+                        <div>
+                          <div className="font-medium">GHS {donation.amount.toFixed(2)}</div>
+                          <div className="text-sm text-gray-600">
+                            {new Date(donation.donation_date).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="outline">{donation.donation_type}</Badge>
+                        <div className="text-xs text-gray-500 mt-1">{donation.payment_method}</div>
+                        <div className="text-xs text-gray-500">Receipt: {donation.receipt_number}</div>
+                      </div>
+                    </div>
+                  ))}
+                  {donationRecords.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">No donation records found</div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Details Tab */}
+          <TabsContent value="details" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Member Details</CardTitle>
+                <CardDescription>{isEditing ? "Edit member information" : "View member information"}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {isEditing ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="address">Address</Label>
+                        <Label htmlFor="name">Full Name</Label>
                         <Input
-                          id="address"
-                          value={editForm.address}
-                          onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                          id="name"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                         />
                       </div>
-                      <div className="flex gap-2">
-                        <Button onClick={handleSave} className="bg-orange-600 hover:bg-orange-700">
-                          <Save className="h-4 w-4 mr-2" />
-                          Save Changes
-                        </Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
-                          Cancel
-                        </Button>
+                      <div>
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                          id="phone"
+                          value={editForm.phone}
+                          onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                        />
                       </div>
-                    </>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-sm font-medium text-gray-500">Full Name</Label>
-                          <p className="text-lg">{member.name}</p>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-500">Phone Number</Label>
-                          <p className="text-lg">{member.phone}</p>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-500">Email Address</Label>
-                          <p className="text-lg">{member.email || "Not provided"}</p>
-                        </div>
+                      <div>
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={editForm.email}
+                          onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                        />
                       </div>
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-sm font-medium text-gray-500">Department</Label>
-                          <p className="text-lg">{member.department}</p>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-500">Status</Label>
-                          <p className="text-lg">{member.status}</p>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-500">Join Date</Label>
-                          <p className="text-lg">{new Date(member.join_date).toLocaleDateString()}</p>
-                        </div>
+                      <div>
+                        <Label htmlFor="department">Department</Label>
+                        <Select
+                          value={editForm.department}
+                          onValueChange={(value) => setEditForm({ ...editForm, department: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {departments.map((dept) => (
+                              <SelectItem key={dept} value={dept}>
+                                {dept}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      {member.address && (
-                        <div className="md:col-span-2">
-                          <Label className="text-sm font-medium text-gray-500">Address</Label>
-                          <p className="text-lg">{member.address}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Notes Tab */}
-            <TabsContent value="notes" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Member Notes</CardTitle>
-                  <CardDescription>
-                    {isEditing ? "Edit notes about this member" : "Notes about this member"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isEditing ? (
-                    <div className="space-y-4">
-                      <Textarea
-                        value={editForm.notes}
-                        onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
-                        placeholder="Add notes about this member..."
-                        rows={6}
-                      />
-                      <div className="flex gap-2">
-                        <Button onClick={handleSave} className="bg-orange-600 hover:bg-orange-700">
-                          <Save className="h-4 w-4 mr-2" />
-                          Save Notes
-                        </Button>
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
-                          Cancel
-                        </Button>
+                      <div>
+                        <Label htmlFor="status">Status</Label>
+                        <Select
+                          value={editForm.status}
+                          onValueChange={(value: "Active" | "Inactive") => setEditForm({ ...editForm, status: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Active">Active</SelectItem>
+                            <SelectItem value="Inactive">Inactive</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
-                  ) : (
                     <div>
-                      {member.notes ? (
-                        <p className="text-gray-700 whitespace-pre-wrap">{member.notes}</p>
-                      ) : (
-                        <p className="text-gray-500 italic">No notes available for this member.</p>
-                      )}
+                      <Label htmlFor="address">Address</Label>
+                      <Input
+                        id="address"
+                        value={editForm.address}
+                        onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                      />
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+                    <div className="flex gap-2">
+                      <Button onClick={handleSave} className="bg-orange-600 hover:bg-orange-700">
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </Button>
+                      <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-500">Full Name</Label>
+                        <p className="text-lg">{member.name}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-500">Phone Number</Label>
+                        <p className="text-lg">{member.phone}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-500">Email Address</Label>
+                        <p className="text-lg">{member.email || "Not provided"}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-500">Department</Label>
+                        <p className="text-lg">{member.department}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-500">Status</Label>
+                        <p className="text-lg">{member.status}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-500">Join Date</Label>
+                        <p className="text-lg">{new Date(member.join_date).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    {member.address && (
+                      <div className="md:col-span-2">
+                        <Label className="text-sm font-medium text-gray-500">Address</Label>
+                        <p className="text-lg">{member.address}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Photo Upload Dialog */}
-        <Dialog open={photoDialogOpen} onOpenChange={setPhotoDialogOpen}>
-          <DialogContent className="bg-white border-2 border-gray-200 shadow-2xl max-w-md">
-            <div className="bg-white p-2 rounded-lg">
-              <PhotoUpload
-                currentPhoto={member.photo_url}
-                memberName={member.name}
-                onPhotoUpdate={handlePhotoUpdate}
-                onPhotoRemove={handlePhotoRemove}
-                onClose={() => setPhotoDialogOpen(false)}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
+          {/* Notes Tab */}
+          <TabsContent value="notes" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Member Notes</CardTitle>
+                <CardDescription>
+                  {isEditing ? "Edit notes about this member" : "Notes about this member"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isEditing ? (
+                  <div className="space-y-4">
+                    <Textarea
+                      value={editForm.notes}
+                      onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                      placeholder="Add notes about this member..."
+                      rows={6}
+                    />
+                    <div className="flex gap-2">
+                      <Button onClick={handleSave} className="bg-orange-600 hover:bg-orange-700">
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Notes
+                      </Button>
+                      <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    {member.notes ? (
+                      <p className="text-gray-700 whitespace-pre-wrap">{member.notes}</p>
+                    ) : (
+                      <p className="text-gray-500 italic">No notes available for this member.</p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
+
+      {/* Photo Upload Dialog */}
+      <Dialog open={photoDialogOpen} onOpenChange={setPhotoDialogOpen}>
+        <DialogContent className="bg-white border-2 border-gray-200 shadow-2xl max-w-md">
+          <div className="bg-white p-2 rounded-lg">
+            <PhotoUpload
+              currentPhoto={member.photo_url}
+              memberName={member.name}
+              onPhotoUpdate={handlePhotoUpdate}
+              onPhotoRemove={handlePhotoRemove}
+              onClose={() => setPhotoDialogOpen(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

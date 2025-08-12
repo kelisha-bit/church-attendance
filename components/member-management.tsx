@@ -177,6 +177,11 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
     return matchesSearch && matchesDepartment
   })
 
+  // Show member profile if selected
+  if (profileMemberId) {
+    return <MemberProfile memberId={profileMemberId} onBack={() => setProfileMemberId(null)} />
+  }
+
   if (loading) {
     return (
       <Card>
@@ -463,9 +468,6 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Member Profile Dialog */}
-      {profileMemberId && <MemberProfile memberId={profileMemberId} onClose={() => setProfileMemberId(null)} />}
     </Card>
   )
 }

@@ -3,57 +3,59 @@ import { supabase, isSupabaseAvailable } from "./supabase"
 export interface User {
   id: string
   email: string
-  name?: string
-  role?: "admin" | "member" | "visitor"
-  created_at: string
+  name: string
+  role: "Admin" | "Pastor" | "Member"
+  avatar?: string
 }
 
-export interface AuthState {
-  user: User | null
-  loading: boolean
-  error: string | null
-}
-
-// Mock users for demo mode
-const mockUsers = [
+// Demo users for testing
+const demoUsers: User[] = [
   {
-    id: "1",
+    id: "demo-admin",
     email: "admin@church.com",
-    password: "admin123",
     name: "Church Administrator",
-    role: "admin" as const,
-    created_at: new Date().toISOString(),
+    role: "Admin",
   },
   {
-    id: "2",
+    id: "demo-pastor",
     email: "pastor@church.com",
-    password: "pastor123",
     name: "Pastor John",
-    role: "admin" as const,
-    created_at: new Date().toISOString(),
+    role: "Pastor",
   },
   {
-    id: "3",
+    id: "demo-member",
     email: "member@church.com",
-    password: "member123",
-    name: "Church Member",
-    role: "member" as const,
-    created_at: new Date().toISOString(),
+    name: "Mary Johnson",
+    role: "Member",
   },
 ]
 
-// Authentication functions
 export const authService = {
-  // Sign in with email and password
   async signIn(email: string, password: string): Promise<{ user: User | null; error: string | null }> {
-    if (isSupabaseAvailable() && supabase) {
-      try {
+    try {
+      // First try demo mode authentication
+      const demoUser = demoUsers.find((user) => user.email === email)
+      if (demoUser && (password === "admin123" || password === "pastor123" || password === "member123")) {
+        // Store demo user in localStorage
+        localStorage.setItem("demo_user", JSON.stringify(demoUser))
+        localStorage.setItem("auth_mode", "demo")
+        return { user: demoUser, error: null }
+      }
+
+      // Try Supabase authentication if available
+      if (isSupabaseAvailable() && supabase) {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
         if (error) {
+          // Fallback to demo mode if Supabase fails
+          if (demoUser) {
+            localStorage.setItem("demo_user", JSON.stringify(demoUser))
+            localStorage.setItem("auth_mode", "demo")
+            return { user: demoUser, error: null }
+          }
           return { user: null, error: error.message }
         }
 
@@ -61,48 +63,46 @@ export const authService = {
           const user: User = {
             id: data.user.id,
             email: data.user.email || "",
-            name: data.user.user_metadata?.name || data.user.email?.split("@")[0],
-            role: data.user.user_metadata?.role || "member",
-            created_at: data.user.created_at || new Date().toISOString(),
+            name: data.user.user_metadata?.name || data.user.email?.split("@")[0] || "User",
+            role: data.user.user_metadata?.role || "Member",
           }
+          localStorage.setItem("auth_mode", "supabase")
           return { user, error: null }
         }
-
-        return { user: null, error: "Authentication failed" }
-      } catch (error) {
-        return { user: null, error: "Network error occurred" }
       }
-    } else {
-      // Mock authentication for demo mode
-      const mockUser = mockUsers.find((u) => u.email === email && u.password === password)
-      if (mockUser) {
-        const user: User = {
-          id: mockUser.id,
-          email: mockUser.email,
-          name: mockUser.name,
-          role: mockUser.role,
-          created_at: mockUser.created_at,
-        }
-        // Store in localStorage for demo mode
-        localStorage.setItem("demo_user", JSON.stringify(user))
-        return { user, error: null }
-      } else {
-        return { user: null, error: "Invalid email or password" }
+
+      // If no demo user found and Supabase not available
+      return {
+        user: null,
+        error:
+          "Invalid credentials. Try: admin@church.com/admin123, pastor@church.com/pastor123, or member@church.com/member123",
+      }
+    } catch (error) {
+      // Final fallback to demo mode
+      const demoUser = demoUsers.find((user) => user.email === email)
+      if (demoUser && (password === "admin123" || password === "pastor123" || password === "member123")) {
+        localStorage.setItem("demo_user", JSON.stringify(demoUser))
+        localStorage.setItem("auth_mode", "demo")
+        return { user: demoUser, error: null }
+      }
+
+      return {
+        user: null,
+        error: "Authentication failed. Using demo mode - try admin@church.com/admin123",
       }
     }
   },
 
-  // Sign up new user
   async signUp(email: string, password: string, name: string): Promise<{ user: User | null; error: string | null }> {
-    if (isSupabaseAvailable() && supabase) {
-      try {
+    try {
+      if (isSupabaseAvailable() && supabase) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               name,
-              role: "member",
+              role: "Member",
             },
           },
         })
@@ -116,50 +116,54 @@ export const authService = {
             id: data.user.id,
             email: data.user.email || "",
             name: name,
-            role: "member",
-            created_at: data.user.created_at || new Date().toISOString(),
+            role: "Member",
           }
           return { user, error: null }
         }
-
-        return { user: null, error: "Registration failed" }
-      } catch (error) {
-        return { user: null, error: "Network error occurred" }
       }
-    } else {
-      // Mock registration for demo mode
+
+      // Demo mode signup
       const newUser: User = {
-        id: Date.now().toString(),
+        id: `demo-${Date.now()}`,
         email,
         name,
-        role: "member",
-        created_at: new Date().toISOString(),
+        role: "Member",
       }
       localStorage.setItem("demo_user", JSON.stringify(newUser))
+      localStorage.setItem("auth_mode", "demo")
       return { user: newUser, error: null }
+    } catch (error) {
+      return { user: null, error: "Sign up failed. Demo mode active." }
     }
   },
 
-  // Sign out
-  async signOut(): Promise<{ error: string | null }> {
-    if (isSupabaseAvailable() && supabase) {
-      try {
-        const { error } = await supabase.auth.signOut()
-        return { error: error?.message || null }
-      } catch (error) {
-        return { error: "Sign out failed" }
+  async signOut(): Promise<void> {
+    try {
+      if (isSupabaseAvailable() && supabase) {
+        await supabase.auth.signOut()
       }
-    } else {
-      // Clear demo mode storage
       localStorage.removeItem("demo_user")
-      return { error: null }
+      localStorage.removeItem("auth_mode")
+    } catch (error) {
+      // Always clear local storage even if Supabase fails
+      localStorage.removeItem("demo_user")
+      localStorage.removeItem("auth_mode")
     }
   },
 
-  // Get current user
   async getCurrentUser(): Promise<User | null> {
-    if (isSupabaseAvailable() && supabase) {
-      try {
+    try {
+      // Check demo mode first
+      const authMode = localStorage.getItem("auth_mode")
+      if (authMode === "demo") {
+        const demoUser = localStorage.getItem("demo_user")
+        if (demoUser) {
+          return JSON.parse(demoUser)
+        }
+      }
+
+      // Check Supabase
+      if (isSupabaseAvailable() && supabase) {
         const {
           data: { user },
         } = await supabase.auth.getUser()
@@ -167,60 +171,23 @@ export const authService = {
           return {
             id: user.id,
             email: user.email || "",
-            name: user.user_metadata?.name || user.email?.split("@")[0],
-            role: user.user_metadata?.role || "member",
-            created_at: user.created_at || new Date().toISOString(),
+            name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+            role: user.user_metadata?.role || "Member",
           }
         }
-        return null
-      } catch (error) {
-        return null
       }
-    } else {
-      // Get from localStorage for demo mode
-      const storedUser = localStorage.getItem("demo_user")
-      return storedUser ? JSON.parse(storedUser) : null
+
+      return null
+    } catch (error) {
+      return null
     }
   },
 
-  // Listen to auth changes
-  onAuthStateChange(callback: (user: User | null) => void) {
-    if (isSupabaseAvailable() && supabase) {
-      return supabase.auth.onAuthStateChange((event, session) => {
-        if (session?.user) {
-          const user: User = {
-            id: session.user.id,
-            email: session.user.email || "",
-            name: session.user.user_metadata?.name || session.user.email?.split("@")[0],
-            role: session.user.user_metadata?.role || "member",
-            created_at: session.user.created_at || new Date().toISOString(),
-          }
-          callback(user)
-        } else {
-          callback(null)
-        }
-      })
-    } else {
-      // For demo mode, we'll check localStorage periodically
-      const checkAuth = () => {
-        const storedUser = localStorage.getItem("demo_user")
-        callback(storedUser ? JSON.parse(storedUser) : null)
-      }
-
-      // Initial check
-      checkAuth()
-
-      // Return a cleanup function
-      return {
-        data: { subscription: { unsubscribe: () => {} } },
-      }
-    }
+  getDemoUsers(): User[] {
+    return demoUsers
   },
-}
 
-// Demo credentials for easy testing
-export const demoCredentials = {
-  admin: { email: "admin@church.com", password: "admin123" },
-  pastor: { email: "pastor@church.com", password: "pastor123" },
-  member: { email: "member@church.com", password: "member123" },
+  isDemo(): boolean {
+    return localStorage.getItem("auth_mode") === "demo"
+  },
 }
