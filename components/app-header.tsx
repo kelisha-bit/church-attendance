@@ -154,25 +154,29 @@ export default function AppHeader() {
                 </div>
               )}
 
-              {/* Mobile Menu Items */}
+              {/* Mobile Menu Items (icons only) */}
               <div className="space-y-2 px-2">
-                <Button variant="ghost" className="w-full justify-start">
-                  <User className="h-4 w-4 shrink-0" />
-                  <span className="flex-1 min-w-0 truncate">Profile</span>
-                </Button>
-                <Button variant="ghost" className="w-full justify-start">
-                  <Bell className="h-4 w-4 shrink-0" />
-                  <span className="flex-1 min-w-0 truncate">Notifications</span>
-                  <Badge className="ml-auto bg-red-500 text-white shrink-0">3</Badge>
-                </Button>
-                <Button variant="ghost" className="w-full justify-start">
-                  <Settings className="h-4 w-4 shrink-0" />
-                  <span className="flex-1 min-w-0 truncate">Settings</span>
-                </Button>
-                <Button variant="ghost" className="w-full justify-start text-red-600" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 shrink-0" />
-                  <span className="flex-1 min-w-0 truncate">Log out</span>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" aria-label="Profile">
+                    <User className="h-5 w-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+                    <Bell className="h-5 w-5" />
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                  </Button>
+                  <Button variant="ghost" size="icon" aria-label="Settings">
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-600"
+                    aria-label="Log out"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
