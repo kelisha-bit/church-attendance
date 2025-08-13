@@ -86,6 +86,8 @@ export interface Event {
   event_date: string
   event_time: string
   location?: string
+  recurring_frequency?: "none" | "weekly" | "monthly" | "yearly"
+  notification_sent?: boolean
   created_at: string
 }
 
