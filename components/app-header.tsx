@@ -51,14 +51,7 @@ export default function AppHeader() {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Title */}
           <div className="flex items-center space-x-4">
-            <Image
-              src="/church-logo.png"
-              alt="Church Logo"
-              width={48}
-              height={48}
-              className="rounded-lg shadow-md"
-              priority
-            />
+            {/* Logo removed as requested */}
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-gray-900">GreaterWorks City Church</h1>
               <p className="text-sm text-gray-600">Management System</p>

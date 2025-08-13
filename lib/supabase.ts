@@ -4,14 +4,30 @@ import { createClient } from "@supabase/supabase-js"
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 
-// Debug logging (remove in production)
-console.log("Supabase URL:", supabaseUrl ? "✓ Set" : "✗ Missing")
-console.log("Supabase Anon Key:", supabaseAnonKey ? "✓ Set" : "✗ Missing")
+// Debug logging in development only, and only once
+const isDev = process.env.NODE_ENV !== "production"
+const isBrowser = typeof window !== "undefined"
+const globalAny = globalThis as unknown as { __LOG_ONCE_FLAGS__?: Record<string, boolean> }
 
-// Check if environment variables are available
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Supabase environment variables are missing. Using mock mode.")
+function logOnce(flag: string, callback: () => void) {
+  if (!globalAny.__LOG_ONCE_FLAGS__) globalAny.__LOG_ONCE_FLAGS__ = {}
+  if (globalAny.__LOG_ONCE_FLAGS__[flag]) return
+  globalAny.__LOG_ONCE_FLAGS__[flag] = true
+  callback()
 }
+
+if (isDev && isBrowser) {
+  logOnce("supabase-debug", () => {
+    // Basic status logs
+    console.log("Supabase URL:", supabaseUrl ? "✓ Set" : "✗ Missing")
+    console.log("Supabase Anon Key:", supabaseAnonKey ? "✓ Set" : "✗ Missing")
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.warn("Supabase environment variables are missing. Using mock mode.")
+    }
+  })
+}
+
+// Note: Warning is handled above (browser dev only) to reduce noise in server logs
 
 // Create Supabase client only if we have the required variables
 export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null

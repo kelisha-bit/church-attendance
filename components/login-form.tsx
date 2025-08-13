@@ -69,14 +69,7 @@ export default function LoginForm() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <Image
-              src="/church-logo.png"
-              alt="GreaterWorks City Church Logo"
-              width={80}
-              height={80}
-              className="rounded-lg shadow-lg"
-              priority
-            />
+            {/* Logo removed as requested */}
           </div>
           <div>
             <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>

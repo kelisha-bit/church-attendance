@@ -1,5 +1,31 @@
 import { supabase, isSupabaseAvailable } from "./supabase"
 
+// Utilities to safely access localStorage in browser-only contexts
+const isBrowser = typeof window !== "undefined"
+
+function safeLocalStorageGet(key: string): string | null {
+  if (!isBrowser) return null
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeLocalStorageSet(key: string, value: string): void {
+  if (!isBrowser) return
+  try {
+    localStorage.setItem(key, value)
+  } catch {}
+}
+
+function safeLocalStorageRemove(key: string): void {
+  if (!isBrowser) return
+  try {
+    localStorage.removeItem(key)
+  } catch {}
+}
+
 export interface User {
   id: string
   email: string
@@ -36,9 +62,9 @@ export const authService = {
       // First try demo mode authentication
       const demoUser = demoUsers.find((user) => user.email === email)
       if (demoUser && (password === "admin123" || password === "pastor123" || password === "member123")) {
-        // Store demo user in localStorage
-        localStorage.setItem("demo_user", JSON.stringify(demoUser))
-        localStorage.setItem("auth_mode", "demo")
+        // Store demo user in localStorage (browser only)
+        safeLocalStorageSet("demo_user", JSON.stringify(demoUser))
+        safeLocalStorageSet("auth_mode", "demo")
         return { user: demoUser, error: null }
       }
 
@@ -52,8 +78,8 @@ export const authService = {
         if (error) {
           // Fallback to demo mode if Supabase fails
           if (demoUser) {
-            localStorage.setItem("demo_user", JSON.stringify(demoUser))
-            localStorage.setItem("auth_mode", "demo")
+            safeLocalStorageSet("demo_user", JSON.stringify(demoUser))
+            safeLocalStorageSet("auth_mode", "demo")
             return { user: demoUser, error: null }
           }
           return { user: null, error: error.message }
@@ -66,7 +92,7 @@ export const authService = {
             name: data.user.user_metadata?.name || data.user.email?.split("@")[0] || "User",
             role: data.user.user_metadata?.role || "Member",
           }
-          localStorage.setItem("auth_mode", "supabase")
+          safeLocalStorageSet("auth_mode", "supabase")
           return { user, error: null }
         }
       }
@@ -81,8 +107,8 @@ export const authService = {
       // Final fallback to demo mode
       const demoUser = demoUsers.find((user) => user.email === email)
       if (demoUser && (password === "admin123" || password === "pastor123" || password === "member123")) {
-        localStorage.setItem("demo_user", JSON.stringify(demoUser))
-        localStorage.setItem("auth_mode", "demo")
+        safeLocalStorageSet("demo_user", JSON.stringify(demoUser))
+        safeLocalStorageSet("auth_mode", "demo")
         return { user: demoUser, error: null }
       }
 
@@ -129,8 +155,8 @@ export const authService = {
         name,
         role: "Member",
       }
-      localStorage.setItem("demo_user", JSON.stringify(newUser))
-      localStorage.setItem("auth_mode", "demo")
+      safeLocalStorageSet("demo_user", JSON.stringify(newUser))
+      safeLocalStorageSet("auth_mode", "demo")
       return { user: newUser, error: null }
     } catch (error) {
       return { user: null, error: "Sign up failed. Demo mode active." }
@@ -142,21 +168,21 @@ export const authService = {
       if (isSupabaseAvailable() && supabase) {
         await supabase.auth.signOut()
       }
-      localStorage.removeItem("demo_user")
-      localStorage.removeItem("auth_mode")
+      safeLocalStorageRemove("demo_user")
+      safeLocalStorageRemove("auth_mode")
     } catch (error) {
       // Always clear local storage even if Supabase fails
-      localStorage.removeItem("demo_user")
-      localStorage.removeItem("auth_mode")
+      safeLocalStorageRemove("demo_user")
+      safeLocalStorageRemove("auth_mode")
     }
   },
 
   async getCurrentUser(): Promise<User | null> {
     try {
       // Check demo mode first
-      const authMode = localStorage.getItem("auth_mode")
+      const authMode = safeLocalStorageGet("auth_mode")
       if (authMode === "demo") {
-        const demoUser = localStorage.getItem("demo_user")
+        const demoUser = safeLocalStorageGet("demo_user")
         if (demoUser) {
           return JSON.parse(demoUser)
         }
@@ -188,6 +214,6 @@ export const authService = {
   },
 
   isDemo(): boolean {
-    return localStorage.getItem("auth_mode") === "demo"
+    return safeLocalStorageGet("auth_mode") === "demo"
   },
 }

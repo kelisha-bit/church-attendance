@@ -11,8 +11,13 @@ export const metadata: Metadata = {
   title: "GreaterWorks City Church - Management System",
   description: "Church attendance and member management system for GreaterWorks City Church",
   icons: {
-    icon: "/church-logo.png",
-    apple: "/church-logo.png",
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icon-192x192.png", sizes: "192x192" },
+    ],
   },
     generator: 'v0.app'
 }

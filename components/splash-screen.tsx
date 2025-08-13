@@ -43,14 +43,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               className="flex justify-center"
             >
               <div className="relative">
-                <Image
-                  src="/church-logo.png"
-                  alt="GreaterWorks City Church Logo"
-                  width={200}
-                  height={200}
-                  className="rounded-full shadow-2xl"
-                  priority
-                />
+                {/* Logo removed as requested */}
                 <div className="absolute inset-0 rounded-full bg-white/10 backdrop-blur-sm"></div>
               </div>
             </motion.div>
