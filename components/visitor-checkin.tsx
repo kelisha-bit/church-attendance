@@ -393,29 +393,29 @@ export default function VisitorCheckin() {
                   </div>
 
                   <div className="mt-3 space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      <span>{visitor.phone}</span>
+                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                      <Phone className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span className="flex-1 min-w-0 truncate">{visitor.phone}</span>
                     </div>
                     {visitor.email && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Mail className="w-4 h-4" />
-                        <span>{visitor.email}</span>
+                      <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <Mail className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span className="flex-1 min-w-0 break-all">{visitor.email}</span>
                       </div>
                     )}
                     {visitor.address && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span>{visitor.address}</span>
+                      <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span className="flex-1 min-w-0 break-words">{visitor.address}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Calendar className="w-4 h-4" />
-                      <span>{new Date(visitor.visit_date).toLocaleDateString()}</span>
+                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                      <Calendar className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span className="flex-1 min-w-0 truncate">{new Date(visitor.visit_date).toLocaleDateString()}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Clock className="w-4 h-4" />
-                      <span>{visitor.visit_time}</span>
+                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                      <Clock className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span className="flex-1 min-w-0 truncate">{visitor.visit_time}</span>
                     </div>
                   </div>
 
