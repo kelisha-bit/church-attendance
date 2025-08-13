@@ -50,11 +50,11 @@ export default function AppHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Title */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 min-w-0">
             {/* Logo removed as requested */}
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-gray-900">GreaterWorks City Church</h1>
-              <p className="text-sm text-gray-600">Management System</p>
+            <div className="hidden sm:block min-w-0">
+              <h1 className="text-xl font-bold text-gray-900 truncate">GreaterWorks City Church</h1>
+              <p className="text-sm text-gray-600 truncate">Management System</p>
             </div>
           </div>
 
@@ -157,21 +157,21 @@ export default function AppHeader() {
               {/* Mobile Menu Items */}
               <div className="space-y-2 px-2">
                 <Button variant="ghost" className="w-full justify-start">
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
+                  <User className="h-4 w-4 shrink-0" />
+                  <span className="flex-1 min-w-0 truncate">Profile</span>
                 </Button>
                 <Button variant="ghost" className="w-full justify-start">
-                  <Bell className="mr-2 h-4 w-4" />
-                  Notifications
-                  <Badge className="ml-auto bg-red-500 text-white">3</Badge>
+                  <Bell className="h-4 w-4 shrink-0" />
+                  <span className="flex-1 min-w-0 truncate">Notifications</span>
+                  <Badge className="ml-auto bg-red-500 text-white shrink-0">3</Badge>
                 </Button>
                 <Button variant="ghost" className="w-full justify-start">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                  <Settings className="h-4 w-4 shrink-0" />
+                  <span className="flex-1 min-w-0 truncate">Settings</span>
                 </Button>
                 <Button variant="ghost" className="w-full justify-start text-red-600" onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  <span className="flex-1 min-w-0 truncate">Log out</span>
                 </Button>
               </div>
             </div>
