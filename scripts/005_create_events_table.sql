@@ -16,6 +16,11 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Ensure columns exist when upgrading an older table definition
+ALTER TABLE events ADD COLUMN IF NOT EXISTS recurring_frequency VARCHAR(20) NOT NULL DEFAULT 'none';
+ALTER TABLE events ADD COLUMN IF NOT EXISTS notification_sent BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE events ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
 -- Helpful indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_events_event_date ON events(event_date);
