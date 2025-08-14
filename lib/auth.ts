@@ -34,186 +34,117 @@ export interface User {
   avatar?: string
 }
 
-// Demo users for testing
-const demoUsers: User[] = [
-  {
-    id: "demo-admin",
-    email: "admin@church.com",
-    name: "Church Administrator",
-    role: "Admin",
-  },
-  {
-    id: "demo-pastor",
-    email: "pastor@church.com",
-    name: "Pastor John",
-    role: "Pastor",
-  },
-  {
-    id: "demo-member",
-    email: "member@church.com",
-    name: "Mary Johnson",
-    role: "Member",
-  },
-]
-
 export const authService = {
   async signIn(email: string, password: string): Promise<{ user: User | null; error: string | null }> {
     try {
-      // First try demo mode authentication
-      const demoUser = demoUsers.find((user) => user.email === email)
-      if (demoUser && (password === "admin123" || password === "pastor123" || password === "member123")) {
-        // Store demo user in localStorage (browser only)
-        safeLocalStorageSet("demo_user", JSON.stringify(demoUser))
-        safeLocalStorageSet("auth_mode", "demo")
-        return { user: demoUser, error: null }
+      if (!isSupabaseAvailable() || !supabase) {
+        return { user: null, error: "Supabase not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY." }
       }
 
-      // Try Supabase authentication if available
-      if (isSupabaseAvailable() && supabase) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-        if (error) {
-          // Fallback to demo mode if Supabase fails
-          if (demoUser) {
-            safeLocalStorageSet("demo_user", JSON.stringify(demoUser))
-            safeLocalStorageSet("auth_mode", "demo")
-            return { user: demoUser, error: null }
-          }
-          return { user: null, error: error.message }
+      if (error) {
+        return { user: null, error: error.message }
+      }
+
+      if (data.user) {
+        const user: User = {
+          id: data.user.id,
+          email: data.user.email || "",
+          name: data.user.user_metadata?.name || data.user.email?.split("@")[0] || "User",
+          role: data.user.user_metadata?.role || "Member",
         }
-
-        if (data.user) {
-          const user: User = {
-            id: data.user.id,
-            email: data.user.email || "",
-            name: data.user.user_metadata?.name || data.user.email?.split("@")[0] || "User",
-            role: data.user.user_metadata?.role || "Member",
-          }
-          safeLocalStorageSet("auth_mode", "supabase")
-          return { user, error: null }
-        }
+        return { user, error: null }
       }
 
-      // If no demo user found and Supabase not available
-      return {
-        user: null,
-        error:
-          "Invalid credentials. Try: admin@church.com/admin123, pastor@church.com/pastor123, or member@church.com/member123",
-      }
+      return { user: null, error: "Invalid credentials" }
     } catch (error) {
-      // Final fallback to demo mode
-      const demoUser = demoUsers.find((user) => user.email === email)
-      if (demoUser && (password === "admin123" || password === "pastor123" || password === "member123")) {
-        safeLocalStorageSet("demo_user", JSON.stringify(demoUser))
-        safeLocalStorageSet("auth_mode", "demo")
-        return { user: demoUser, error: null }
-      }
-
-      return {
-        user: null,
-        error: "Authentication failed. Using demo mode - try admin@church.com/admin123",
-      }
+      return { user: null, error: "Sign in failed. Please try again." }
     }
   },
 
   async signUp(email: string, password: string, name: string): Promise<{ user: User | null; error: string | null }> {
     try {
-      if (isSupabaseAvailable() && supabase) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name,
-              role: "Member",
-            },
-          },
-        })
-
-        if (error) {
-          return { user: null, error: error.message }
-        }
-
-        if (data.user) {
-          const user: User = {
-            id: data.user.id,
-            email: data.user.email || "",
-            name: name,
-            role: "Member",
-          }
-          return { user, error: null }
-        }
+      if (!isSupabaseAvailable() || !supabase) {
+        return { user: null, error: "Supabase not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY." }
       }
 
-      // Demo mode signup
-      const newUser: User = {
-        id: `demo-${Date.now()}`,
+      const { data, error } = await supabase.auth.signUp({
         email,
-        name,
-        role: "Member",
+        password,
+        options: {
+          data: {
+            name,
+            role: "Member",
+          },
+        },
+      })
+
+      if (error) {
+        return { user: null, error: error.message }
       }
-      safeLocalStorageSet("demo_user", JSON.stringify(newUser))
-      safeLocalStorageSet("auth_mode", "demo")
-      return { user: newUser, error: null }
+
+      if (data.user) {
+        const user: User = {
+          id: data.user.id,
+          email: data.user.email || "",
+          name: name,
+          role: "Member",
+        }
+        return { user, error: null }
+      }
+
+      return { user: null, error: "Sign up failed. Please try again." }
     } catch (error) {
-      return { user: null, error: "Sign up failed. Demo mode active." }
+      return { user: null, error: "Sign up failed. Please try again." }
     }
   },
 
   async signOut(): Promise<void> {
     try {
-      if (isSupabaseAvailable() && supabase) {
-        await supabase.auth.signOut()
-      }
-      safeLocalStorageRemove("demo_user")
-      safeLocalStorageRemove("auth_mode")
+      if (!isSupabaseAvailable() || !supabase) return
+      await supabase.auth.signOut()
     } catch (error) {
-      // Always clear local storage even if Supabase fails
-      safeLocalStorageRemove("demo_user")
-      safeLocalStorageRemove("auth_mode")
+      // no-op
     }
   },
 
   async getCurrentUser(): Promise<User | null> {
     try {
-      // Check demo mode first
-      const authMode = safeLocalStorageGet("auth_mode")
-      if (authMode === "demo") {
-        const demoUser = safeLocalStorageGet("demo_user")
-        if (demoUser) {
-          return JSON.parse(demoUser)
-        }
+      if (!isSupabaseAvailable() || !supabase) {
+        return null;
       }
-
-      // Check Supabase
-      if (isSupabaseAvailable() && supabase) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser()
-        if (user) {
-          return {
-            id: user.id,
-            email: user.email || "",
-            name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
-            role: user.user_metadata?.role || "Member",
-          }
-        }
+  
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error || !user) {
+        return null;
       }
-
-      return null
+  
+      // Get the user's profile with role
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('name, role')
+        .eq('id', user.id)
+        .single();
+  
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+      }
+  
+      return {
+        id: user.id,
+        email: user.email || '',
+        name: profile?.name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        role: (profile?.role as 'Admin' | 'Pastor' | 'Member') || 'Member',
+        avatar: user.user_metadata?.avatar_url
+      };
     } catch (error) {
-      return null
+      console.error('Error getting current user:', error);
+      return null;
     }
-  },
-
-  getDemoUsers(): User[] {
-    return demoUsers
-  },
-
-  isDemo(): boolean {
-    return safeLocalStorageGet("auth_mode") === "demo"
   },
 }

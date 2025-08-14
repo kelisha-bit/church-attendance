@@ -63,6 +63,7 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
     "Media Team",
     "Evangelism",
     "Welfare",
+    "Women's Ministry"
   ]
 
   useEffect(() => {

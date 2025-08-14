@@ -11,7 +11,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
   signOut: () => Promise<void>
-  isDemo: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -51,14 +50,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
-      const { user: newUser, error } = await authService.signUp(email, password, name)
+      const { user: newUser, error } = await authService.signUp(email, password, name);
       if (newUser) {
-        setUser(newUser)
-        return { success: true }
+        setUser(newUser);
+        return { success: true };
       }
-      return { success: false, error: error || "Sign up failed" }
+      return { success: false, error: error || "Sign up failed" };
     } catch (error) {
-      return { success: false, error: "Sign up failed. Please try again." }
+      return { success: false, error: "Sign up failed. Please try again." };
     }
   }
 
@@ -78,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signOut,
-    isDemo: authService.isDemo(),
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

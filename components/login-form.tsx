@@ -38,31 +38,7 @@ export default function LoginForm() {
     }
   }
 
-  const handleDemoLogin = async (role: "admin" | "pastor" | "member") => {
-    setError("")
-    setSuccess("")
-
-    const credentials = {
-      admin: { email: "admin@church.com", password: "admin123" },
-      pastor: { email: "pastor@church.com", password: "pastor123" },
-      member: { email: "member@church.com", password: "member123" },
-    }
-
-    const { email: demoEmail, password: demoPassword } = credentials[role]
-    setEmail(demoEmail)
-    setPassword(demoPassword)
-
-    try {
-      const result = await signIn(demoEmail, demoPassword)
-      if (result.success) {
-        setSuccess(`Successfully logged in as ${role}!`)
-      } else {
-        setError(result.error || "Demo login failed. Please try again.")
-      }
-    } catch (err) {
-      setError("Demo login failed. Please try again.")
-    }
-  }
+  // demo login removed
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-red-600 p-4">
@@ -96,68 +72,7 @@ export default function LoginForm() {
             </Alert>
           )}
 
-          {/* Demo Mode Notice */}
-          <Alert className="border-blue-200 bg-blue-50">
-            <AlertCircle className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800">
-              <strong>Demo Mode Active:</strong> Use the quick login buttons below or any credentials to access the
-              system.
-            </AlertDescription>
-          </Alert>
-
-          {/* Quick Demo Login Buttons */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-700 text-center">Quick Demo Access:</p>
-            <div className="grid grid-cols-1 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleDemoLogin("admin")}
-                disabled={loading}
-                className="flex items-center justify-between p-3 h-auto hover:bg-red-50"
-              >
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-red-600" />
-                  <span>Admin Access</span>
-                </div>
-                <Badge variant="secondary" className="bg-red-100 text-red-800">
-                  Full Access
-                </Badge>
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleDemoLogin("pastor")}
-                disabled={loading}
-                className="flex items-center justify-between p-3 h-auto hover:bg-purple-50"
-              >
-                <div className="flex items-center gap-2">
-                  <Crown className="h-4 w-4 text-purple-600" />
-                  <span>Pastor Access</span>
-                </div>
-                <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                  Leadership
-                </Badge>
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleDemoLogin("member")}
-                disabled={loading}
-                className="flex items-center justify-between p-3 h-auto hover:bg-blue-50"
-              >
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-blue-600" />
-                  <span>Member Access</span>
-                </div>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                  Standard
-                </Badge>
-              </Button>
-            </div>
-          </div>
+          {/* Demo prompts removed */}
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -230,10 +145,7 @@ export default function LoginForm() {
             </Button>
           </form>
 
-          <div className="text-center text-sm text-gray-600 space-y-1">
-            <p>Demo credentials work with any email/password combination</p>
-            <p className="text-xs">Try: admin@church.com / admin123</p>
-          </div>
+          {/* Demo tips removed */}
         </CardContent>
       </Card>
     </div>

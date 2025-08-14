@@ -17,7 +17,7 @@ import { Bell, Settings, LogOut, User, Menu, X } from "lucide-react"
 import Image from "next/image"
 
 export default function AppHeader() {
-  const { user, signOut, isDemo } = useAuth()
+  const { user, signOut } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -60,12 +60,7 @@ export default function AppHeader() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Demo Mode Badge */}
-            {isDemo && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                Demo Mode
-              </Badge>
-            )}
+            {/* Demo Mode Badge removed */}
 
             {/* Notifications */}
             <Button variant="ghost" size="sm" className="relative">
@@ -145,14 +140,7 @@ export default function AppHeader() {
                 </div>
               </div>
 
-              {/* Demo Mode Badge */}
-              {isDemo && (
-                <div className="px-2">
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                    Demo Mode Active
-                  </Badge>
-                </div>
-              )}
+              {/* Demo Mode Badge removed */}
 
               {/* Mobile Menu Items (icons only) */}
               <div className="space-y-2 px-2">
