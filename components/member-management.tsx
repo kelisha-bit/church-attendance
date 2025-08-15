@@ -309,20 +309,20 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
           </Dialog>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-2 sm:p-6">
         {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search members..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 w-full text-sm sm:text-base"
             />
           </div>
           <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger className="w-full sm:w-48 text-sm sm:text-base">
               <SelectValue placeholder="Filter by department" />
             </SelectTrigger>
             <SelectContent>
@@ -346,14 +346,14 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
             </div>
           ) : (
             filteredMembers.map((member) => (
-              <Card key={member.id} className="border-l-4 border-l-orange-500">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className="relative">
-                        <Avatar className="h-12 w-12">
+              <Card key={member.id} className="border-l-4 border-l-orange-500 overflow-hidden">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="flex items-start gap-3 w-full">
+                      <div className="relative flex-shrink-0">
+                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                           <AvatarImage src={member.photo_url || "/placeholder.svg"} />
-                          <AvatarFallback className="bg-orange-100 text-orange-600">
+                          <AvatarFallback className="bg-orange-100 text-orange-600 text-xs sm:text-sm">
                             {member.name
                               .split(" ")
                               .map((n) => n[0])
@@ -363,65 +363,67 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
                         <Button
                           size="sm"
                           variant="outline"
-                          className="absolute -bottom-1 -right-1 w-6 h-6 p-0 rounded-full bg-white border-2 border-orange-200 hover:bg-orange-50"
+                          className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 p-0 rounded-full bg-white border-2 border-orange-200 hover:bg-orange-50"
                           onClick={() => {
                             setSelectedMember(member)
                             setPhotoDialogOpen(true)
                           }}
                         >
-                          <Camera className="w-3 h-3 text-orange-600" />
+                          <Camera className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-600" />
                         </Button>
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="font-semibold text-lg">{member.name}</h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-1">
-                            <Phone className="h-3 w-3" />
-                            {member.phone}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base sm:text-lg truncate">{member.name}</h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 text-xs sm:text-sm text-gray-600">
+                          <div className="flex items-center gap-1 truncate">
+                            <Phone className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{member.phone}</span>
                           </div>
                           {member.email && (
-                            <div className="flex items-center gap-1">
-                              <Mail className="h-3 w-3" />
-                              {member.email}
+                            <div className="flex items-center gap-1 truncate">
+                              <Mail className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{member.email}</span>
                             </div>
                           )}
                         </div>
                         {member.address && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <MapPin className="h-3 w-3" />
-                            {member.address}
+                          <div className="flex items-start gap-1 text-xs sm:text-sm text-gray-600 mt-1">
+                            <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                            <span className="line-clamp-2">{member.address}</span>
                           </div>
                         )}
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                          <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs">
                             {member.department}
                           </Badge>
-                          <Badge variant={member.status === "Active" ? "default" : "secondary"}>{member.status}</Badge>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <Calendar className="h-3 w-3" />
-                            Joined {new Date(member.join_date).toLocaleDateString()}
+                          <Badge variant={member.status === "Active" ? "default" : "secondary"} className="text-xs">
+                            {member.status}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-500">
+                            <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <span>Joined {new Date(member.join_date).toLocaleDateString()}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-end sm:justify-start gap-2 sm:gap-1.5 mt-2 sm:mt-0">
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="xs"
                         onClick={() => setProfileMemberId(member.id)}
-                        className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
+                        className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200 text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3"
                       >
-                        <User className="h-4 w-4 mr-1" />
-                        Profile
+                        <User className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                        <span className="hidden sm:inline">Profile</span>
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="outline"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700 bg-transparent"
+                            size="xs"
+                            className="text-red-600 hover:text-red-700 bg-transparent h-7 w-7 sm:h-8 sm:w-8 p-0 flex items-center justify-center"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="bg-white border-2 border-gray-200">

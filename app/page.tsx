@@ -326,42 +326,42 @@ export default function Home() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 gap-1">
-              <TabsTrigger value="dashboard" className="text-xs">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                Dashboard
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-9 gap-1 overflow-x-auto pb-2">
+              <TabsTrigger value="dashboard" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Dashboard</span>
               </TabsTrigger>
-              <TabsTrigger value="members" className="text-xs">
-                <Users className="h-4 w-4 mr-1" />
-                Members
+              <TabsTrigger value="members" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Members</span>
               </TabsTrigger>
-              <TabsTrigger value="attendance" className="text-xs">
-                <Calendar className="h-4 w-4 mr-1" />
-                Attendance
+              <TabsTrigger value="attendance" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Attendance</span>
               </TabsTrigger>
-              <TabsTrigger value="photos" className="text-xs">
-                <Camera className="h-4 w-4 mr-1" />
-                Photos
+              <TabsTrigger value="photos" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <Camera className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Photos</span>
               </TabsTrigger>
-              <TabsTrigger value="donations" className="text-xs">
-                <DollarSign className="h-4 w-4 mr-1" />
-                Donations
+              <TabsTrigger value="donations" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Donations</span>
               </TabsTrigger>
-              <TabsTrigger value="reports" className="text-xs">
-                <FileText className="h-4 w-4 mr-1" />
-                Reports
+              <TabsTrigger value="reports" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <FileText className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Reports</span>
               </TabsTrigger>
-              <TabsTrigger value="certificates" className="text-xs">
-                <Award className="h-4 w-4 mr-1" />
-                Certificates
+              <TabsTrigger value="certificates" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <Award className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Certificates</span>
               </TabsTrigger>
-              <TabsTrigger value="signatures" className="text-xs">
-                <PenTool className="h-4 w-4 mr-1" />
-                Signatures
+              <TabsTrigger value="signatures" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <PenTool className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Signatures</span>
               </TabsTrigger>
-              <TabsTrigger value="events" className="text-xs">
-                <Bell className="h-4 w-4 mr-1" />
-                Events
+              <TabsTrigger value="events" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <Bell className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
+                <span className="mt-0.5 sm:mt-0">Events</span>
               </TabsTrigger>
             </TabsList>
 
