@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS members (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT EXISTS,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Add notes column to members table
-ALTER TABLE members ADD COLUMN IF NOT EXISTS notes TEXT;
