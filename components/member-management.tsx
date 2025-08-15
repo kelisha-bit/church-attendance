@@ -63,7 +63,12 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
     "Media Team",
     "Evangelism",
     "Welfare",
-    "Women's Ministry"
+    "Women's Ministry",
+    "Men's ministry",
+    "Music Ministry",
+    "Finance",
+    "Security",
+    "Secretary",
   ]
 
   useEffect(() => {
@@ -351,9 +356,9 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex items-start gap-3 w-full">
                       <div className="relative flex-shrink-0">
-                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                        <Avatar className="h-14 w-14 sm:h-16 sm:w-16">
                           <AvatarImage src={member.photo_url || "/placeholder.svg"} />
-                          <AvatarFallback className="bg-orange-100 text-orange-600 text-xs sm:text-sm">
+                          <AvatarFallback className="bg-orange-100 text-orange-600 text-sm sm:text-base">
                             {member.name
                               .split(" ")
                               .map((n) => n[0])
@@ -363,13 +368,13 @@ export default function MemberManagement({ onStatsUpdate }: MemberManagementProp
                         <Button
                           size="sm"
                           variant="outline"
-                          className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 p-0 rounded-full bg-white border-2 border-orange-200 hover:bg-orange-50"
+                          className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 p-0 rounded-full bg-white border-2 border-orange-200 hover:bg-orange-50"
                           onClick={() => {
                             setSelectedMember(member)
                             setPhotoDialogOpen(true)
                           }}
                         >
-                          <Camera className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-600" />
+                          <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
                         </Button>
                       </div>
                       <div className="flex-1 min-w-0">

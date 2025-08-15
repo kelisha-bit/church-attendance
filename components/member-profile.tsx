@@ -408,9 +408,9 @@ export default function MemberProfile({ memberId, onBack }: MemberProfileProps) 
                 <ChevronLeft className="h-5 w-5" />
               </Button>
               <div className="relative">
-                <Avatar className="h-16 w-16 border-4 border-white">
+                <Avatar className="h-24 w-24 sm:h-28 sm:w-28 border-4 border-white">
                   <AvatarImage src={member.photo_url || "/placeholder.svg"} />
-                  <AvatarFallback className="bg-white text-orange-600 text-xl font-bold">
+                  <AvatarFallback className="bg-white text-orange-600 text-2xl sm:text-3xl font-bold">
                     {member.name
                       .split(" ")
                       .map((n) => n[0])
@@ -420,10 +420,10 @@ export default function MemberProfile({ memberId, onBack }: MemberProfileProps) 
                 <Button
                   size="sm"
                   variant="secondary"
-                  className="absolute -bottom-1 -right-1 w-8 h-8 p-0 rounded-full"
+                  className="absolute -bottom-1 -right-1 w-10 h-10 sm:w-11 sm:h-11 p-0 rounded-full"
                   onClick={() => setPhotoDialogOpen(true)}
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-5 h-5 sm:w-6 sm:h-6" />
                 </Button>
               </div>
               <div>
@@ -468,12 +468,12 @@ export default function MemberProfile({ memberId, onBack }: MemberProfileProps) 
       {/* Content */}
       <div className="container mx-auto px-4 py-6">
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="attendance">Attendance</TabsTrigger>
-            <TabsTrigger value="donations">Donations</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsList className="w-full mb-6 flex gap-2 overflow-x-auto whitespace-nowrap sm:grid sm:grid-cols-5 sm:overflow-visible">
+            <TabsTrigger value="overview" className="px-3 py-2 text-sm sm:text-base flex-shrink-0">Overview</TabsTrigger>
+            <TabsTrigger value="attendance" className="px-3 py-2 text-sm sm:text-base flex-shrink-0">Attendance</TabsTrigger>
+            <TabsTrigger value="donations" className="px-3 py-2 text-sm sm:text-base flex-shrink-0">Donations</TabsTrigger>
+            <TabsTrigger value="details" className="px-3 py-2 text-sm sm:text-base flex-shrink-0">Details</TabsTrigger>
+            <TabsTrigger value="notes" className="px-3 py-2 text-sm sm:text-base flex-shrink-0">Notes</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}

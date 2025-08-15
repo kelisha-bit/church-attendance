@@ -326,44 +326,48 @@ export default function Home() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-9 gap-1 overflow-x-auto pb-2">
-              <TabsTrigger value="dashboard" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+            <div className="relative">
+              <TabsList className="flex w-full gap-2 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory overscroll-x-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:grid sm:grid-cols-9 sm:gap-1 sm:overflow-visible">
+                <TabsTrigger value="dashboard" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Dashboard</span>
               </TabsTrigger>
-              <TabsTrigger value="members" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="members" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <Users className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Members</span>
               </TabsTrigger>
-              <TabsTrigger value="attendance" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="attendance" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Attendance</span>
               </TabsTrigger>
-              <TabsTrigger value="photos" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="photos" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <Camera className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Photos</span>
               </TabsTrigger>
-              <TabsTrigger value="donations" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="donations" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Donations</span>
               </TabsTrigger>
-              <TabsTrigger value="reports" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="reports" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Reports</span>
               </TabsTrigger>
-              <TabsTrigger value="certificates" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="certificates" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <Award className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Certificates</span>
               </TabsTrigger>
-              <TabsTrigger value="signatures" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="signatures" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <PenTool className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Signatures</span>
               </TabsTrigger>
-              <TabsTrigger value="events" className="text-[10px] sm:text-xs flex flex-col items-center justify-center h-16 sm:h-auto sm:flex-row sm:justify-start">
+                <TabsTrigger value="events" className="shrink-0 snap-start text-[10px] sm:text-xs flex flex-col items-center justify-center h-20 sm:h-auto sm:flex-row sm:justify-start">
                 <Bell className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1 mb-0.5 sm:mb-0" />
                 <span className="mt-0.5 sm:mt-0">Events</span>
               </TabsTrigger>
-            </TabsList>
+              </TabsList>
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-gray-50 to-transparent sm:hidden" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-gray-50 to-transparent sm:hidden" />
+            </div>
 
             {/* Dashboard Tab */}
             <TabsContent value="dashboard" className="space-y-6">
