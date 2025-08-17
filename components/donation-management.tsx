@@ -721,7 +721,7 @@ export default function DonationManagement() {
                             <SelectTrigger className="bg-white border-gray-300 focus:border-green-500">
                               <SelectValue placeholder="Choose a member or leave blank for non-member" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white border-gray-200">
+                            <SelectContent position="popper" className="bg-white border-gray-200 max-h-72 overflow-y-auto">
                               <SelectItem value="none" className="hover:bg-green-50">
                                 Non-member / Anonymous
                               </SelectItem>

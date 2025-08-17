@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Bell, Settings, LogOut, User, Menu, X } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function AppHeader() {
   const { user, signOut } = useAuth()
@@ -63,16 +64,20 @@ export default function AppHeader() {
             {/* Demo Mode Badge removed */}
 
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/notifications" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  3
+                </span>
+              </Link>
             </Button>
 
             {/* Settings */}
-            <Button variant="ghost" size="sm">
-              <Settings className="h-5 w-5" />
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/settings">
+                <Settings className="h-5 w-5" />
+              </Link>
             </Button>
 
             {/* User Menu */}
@@ -96,13 +101,17 @@ export default function AppHeader() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
@@ -145,18 +154,24 @@ export default function AppHeader() {
               {/* Mobile Menu Items with better spacing */}
               <div className="mt-4 px-2">
                 <div className="grid grid-cols-4 gap-1 justify-items-center">
-                  <Button variant="ghost" size="icon" className="flex flex-col items-center h-auto p-2 w-full" aria-label="Profile">
-                    <User className="h-5 w-5 mb-1" />
-                    <span className="text-xs">Profile</span>
+                  <Button asChild variant="ghost" size="icon" className="flex flex-col items-center h-auto p-2 w-full" aria-label="Profile">
+                    <Link href="/profile">
+                      <User className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Profile</span>
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="flex flex-col items-center h-auto p-2 w-full relative" aria-label="Notifications">
-                    <Bell className="h-5 w-5 mb-1" />
-                    <span className="absolute top-0 right-2 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
-                    <span className="text-xs">Alerts</span>
+                  <Button asChild variant="ghost" size="icon" className="flex flex-col items-center h-auto p-2 w-full relative" aria-label="Notifications">
+                    <Link href="/notifications">
+                      <Bell className="h-5 w-5 mb-1" />
+                      <span className="absolute top-0 right-2 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                      <span className="text-xs">Alerts</span>
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" className="flex flex-col items-center h-auto p-2 w-full" aria-label="Settings">
-                    <Settings className="h-5 w-5 mb-1" />
-                    <span className="text-xs">Settings</span>
+                  <Button asChild variant="ghost" size="icon" className="flex flex-col items-center h-auto p-2 w-full" aria-label="Settings">
+                    <Link href="/settings">
+                      <Settings className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Settings</span>
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
